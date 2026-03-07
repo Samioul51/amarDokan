@@ -2,6 +2,7 @@ package com.amarDokan.amarDokan.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,4 +22,7 @@ public class Category {
     private String imageName;
 
     private Boolean isActive;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product> products;
 }

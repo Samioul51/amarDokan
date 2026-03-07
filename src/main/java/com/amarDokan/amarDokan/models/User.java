@@ -3,6 +3,7 @@ package com.amarDokan.amarDokan.models;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,4 +48,10 @@ public class User {
     private LocalDateTime lockTime;
 
     private String resetToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Cart> cartItems;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductOrder> orders;
 }
