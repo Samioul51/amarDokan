@@ -1,4 +1,4 @@
-package com.amarDokan.repository;
+package com.amarDokan.amarDokan.repository;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
