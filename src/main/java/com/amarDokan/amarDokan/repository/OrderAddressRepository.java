@@ -1,4 +1,4 @@
-package com.amarDokan.repository;
+package com.amarDokan.amarDokan.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
