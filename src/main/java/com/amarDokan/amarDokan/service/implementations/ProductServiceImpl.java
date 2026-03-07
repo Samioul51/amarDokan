@@ -1,4 +1,4 @@
-package com.amarDokan.amarDokan.service.impl;
+package com.amarDokan.amarDokan.service.implementations;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -151,7 +151,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> searchActiveProductPagination(Integer pageNo, Integer pageSize, String category, String keyword) {
+    public Page<Product> searchActiveProductPagination(Integer pageNo, Integer pageSize, String category,
+            String keyword) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return productRepository.searchActiveProducts(keyword, pageable);
     }

@@ -1,4 +1,4 @@
-package com.amarDokan.amarDokan.service.impl;
+package com.amarDokan.amarDokan.service.implementations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +46,7 @@ public class CartServiceImpl implements CartService {
             cart.setUser(user);
             cart.setQuantity(1);
             cart.setTotalPrice(product.getDiscountPrice());
-        } 
-        else {
+        } else {
             // if product is already in the cart it will increase the quantity
             cart = cartStatus;
             cart.setQuantity(cart.getQuantity() + 1);
@@ -94,13 +93,11 @@ public class CartServiceImpl implements CartService {
             if (updatedQuantity <= 0) {
                 // if quantity becomes 0 it will be removed from the cart
                 cartRepository.delete(cart);
-            } 
-            else {
+            } else {
                 cart.setQuantity(updatedQuantity);
                 cartRepository.save(cart);
             }
-        } 
-        else {
+        } else {
             // Increasing quantity
             cart.setQuantity(cart.getQuantity() + 1);
             cartRepository.save(cart);
