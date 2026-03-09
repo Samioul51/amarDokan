@@ -20,7 +20,7 @@ import com.amarDokan.amarDokan.repository.CartRepository;
 import com.amarDokan.amarDokan.repository.ProductOrderRepository;
 import com.amarDokan.amarDokan.service.OrderService;
 
-import com.amarDokan.amarDokan.util.CommonUtil;
+//import com.amarDokan.amarDokan.util.CommonUtil;
 import com.amarDokan.amarDokan.util.OrderStatus;
 
 @Service
@@ -32,8 +32,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CartRepository cartRepository;
 
-    @Autowired
-    private CommonUtil commonUtil;
+    //@Autowired
+    //private CommonUtil commonUtil;
 
     @Override
     public void saveOrder(Long userid, OrderRequest orderRequest) throws Exception {
@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
             ProductOrder savedOrder = orderRepository.save(order);
 
             // Sending order success email
-            commonUtil.sendMailForProductOrder(savedOrder, "Success");
+           // commonUtil.sendMailForProductOrder(savedOrder, "Success");
         }
 
         if (!carts.isEmpty())
