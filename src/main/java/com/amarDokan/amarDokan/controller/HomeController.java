@@ -65,7 +65,7 @@ public class HomeController {
         if (p != null) {
             String email = p.getName();
             User userDtls = userService.getUserByEmail(email);
-            if (userDtls != null) {   // ✅ important check
+            if (userDtls != null) {
                 m.addAttribute("user", userDtls);
 
                 Integer countCart = cartService.getCountCart(userDtls.getId());
@@ -91,12 +91,14 @@ public class HomeController {
         return "Hello World ! This is Home";
     }
 
+    @ResponseBody
     @GetMapping("/signin")
     public String login() {
        // return "login";
         return "Login page is here";
     }
 
+    @ResponseBody
     @GetMapping("/register")
     public String register() {
         //return "register";
