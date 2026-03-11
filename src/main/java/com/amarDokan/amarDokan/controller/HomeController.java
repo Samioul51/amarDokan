@@ -78,7 +78,7 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    @ResponseBody //Remove this when sending html file
+    // @ResponseBody //Remove this when sending html file
     public String index(Model m) {
 
         List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
@@ -87,22 +87,22 @@ public class HomeController {
                 .sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
         m.addAttribute("category", allActiveCategory);
         m.addAttribute("products", allActiveProducts);
-        //return "index";
-        return "Hello World ! This is Home";
+        return "index";
+       // return "Hello World ! This is Home";
     }
 
-    @ResponseBody
+  //  @ResponseBody
     @GetMapping("/signin")
     public String login() {
-       // return "login";
-        return "Login page is here";
+       return "login";
+      //  return "Login page is here";
     }
 
-    @ResponseBody
+  //  @ResponseBody
     @GetMapping("/register")
     public String register() {
-        //return "register";
-        return "registration page is here";
+        return "register";
+      //  return "registration page is here";
     }
 
     @GetMapping("/products")
