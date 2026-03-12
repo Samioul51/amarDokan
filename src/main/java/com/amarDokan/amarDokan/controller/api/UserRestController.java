@@ -2,11 +2,14 @@ package com.amarDokan.amarDokan.controller.api;
 
 import com.amarDokan.amarDokan.models.User;
 import com.amarDokan.amarDokan.service.UserService;
+import com.amarDokan.amarDokan.exception.ErrorResponse;
 import com.amarDokan.amarDokan.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -44,7 +47,19 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Void> updateAccountStatus(@PathVariable Long id, @RequestParam Boolean status) {
+    public ResponseEntity<?> updateAccountStatus(@PathVariable Long id, @RequestParam Boolean status, Principal principal) {
+        if (principal != null) {
+            User currentUser = userService.getUserByEmail(principal.getName());
+            if (currentUser != null && currentUser.getId().equals(id) && !status) {
+                ErrorResponse error = new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "You cannot deactivate your own account while logged in.",
+                        LocalDateTime.now()
+                );
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+            }
+        }
+
         Boolean updated = userService.updateAccountStatus(id, status);
         if (!updated) 
             throw new ResourceNotFoundException("User not found with id: " + id);

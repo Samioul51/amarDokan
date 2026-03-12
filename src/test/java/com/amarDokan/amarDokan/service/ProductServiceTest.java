@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
+import com.amarDokan.amarDokan.models.Category;
 import com.amarDokan.amarDokan.models.Product;
 import com.amarDokan.amarDokan.repository.CategoryRepository;
 import com.amarDokan.amarDokan.repository.ProductRepository;
@@ -32,24 +33,34 @@ public class ProductServiceTest {
     private ProductServiceImpl productService;
 
     private Product product;
+    private Category category;
 
     @BeforeEach
     void setUp() {
+        category = new Category();
+        category.setId(1L);
+        category.setName("Test Category");
+
         product = new Product();
         product.setId(1L);
         product.setTitle("Test Product");
         product.setPrice(100.0);
         product.setDiscount(10);
         product.setIsActive(true);
+        product.setCategory(category);
     }
 
     // Product saving test
 
     @Test
     void saveProduct_Success() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(productRepository.save(any(Product.class))).thenReturn(product);
 
-        Product savedProduct = productService.saveProduct(new Product());
+        Product request = new Product();
+        request.setCategory(category);
+
+        Product savedProduct = productService.saveProduct(request);
 
         assertNotNull(savedProduct);
         assertEquals("Test Product", savedProduct.getTitle());
@@ -96,8 +107,10 @@ public class ProductServiceTest {
         requestProduct.setId(1L);
         requestProduct.setPrice(100.0); // New Price 100
         requestProduct.setDiscount(10); // 10% Discount
+        requestProduct.setCategory(category);
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(dbProduct));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(productRepository.save(any(Product.class))).thenAnswer(i -> i.getArguments()[0]);
 
         MockMultipartFile emptyFile = new MockMultipartFile("image", new byte[0]);

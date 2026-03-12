@@ -5,7 +5,7 @@ import com.amarDokan.amarDokan.service.CategoryService;
 import com.amarDokan.amarDokan.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +22,9 @@ import java.util.List;
 public class CategoryRestController {
 
     private final CategoryService categoryService;
+
+    @Value("${image.upload.path:uploads/img}")
+    private String uploadPath;
 
     public CategoryRestController(CategoryService categoryService) {
         this.categoryService = categoryService;
@@ -54,8 +57,18 @@ public class CategoryRestController {
 
         Category savedCategory = categoryService.saveCategory(category);
         if (savedCategory != null && file != null && !file.isEmpty()) {
-            File saveFile = new ClassPathResource("static/img").getFile();
+            File saveFile = new File(uploadPath);
+            if (!saveFile.exists()) 
+                saveFile.mkdirs();
+            
+
             Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator + file.getOriginalFilename());
+
+            File imgFolder = path.getParent().toFile();
+            if (!imgFolder.exists()) 
+                imgFolder.mkdirs();
+            
+
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         }
         return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);

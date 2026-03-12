@@ -42,9 +42,10 @@
 								<div class="row">
 									<div class="mb-3 col">
 										<label>Category</label> <select class="form-control"
-											name="category">
-											<option th:value="${product.category.name}">[[${product.category.name}]]</option>
-											<option th:each="c:${categories}" th:value="${c.name}">[[${c.name}]]</option>
+											name="category.id">
+											<option value="">--select--</option>
+											<option th:each="c:${categories}" th:value="${c.id}"
+												th:selected="${product.category != null && product.category.id == c.id}">[[${c.name}]]</option>
 										</select>
 									</div>
 									<div class="mb-3 col">

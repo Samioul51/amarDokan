@@ -41,18 +41,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
-    {
-        http.csrf(csrf->csrf.disable()).cors(cors->cors.disable())
-                .authorizeHttpRequests(req->req.requestMatchers("/user/**").hasRole("USER")
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
+                .authorizeHttpRequests(req -> req.requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/**").permitAll())
-                .formLogin(form->form.loginPage("/signin")
+                .formLogin(form -> form.loginPage("/signin")
                         .loginProcessingUrl("/login")
-//						.defaultSuccessUrl("/")
+                        // .defaultSuccessUrl("/")
                         .failureHandler(authenticationFailureHandler)
                         .successHandler(authenticationSuccessHandler))
-                .logout(logout->logout.permitAll());
+                .logout(logout -> logout.permitAll());
 
         return http.build();
     }

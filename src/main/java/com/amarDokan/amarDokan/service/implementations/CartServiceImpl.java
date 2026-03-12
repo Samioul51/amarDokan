@@ -64,10 +64,16 @@ public class CartServiceImpl implements CartService {
         List<Cart> updatedCarts = new ArrayList<>();
 
         for (Cart c : carts) {
-            Double totalPrice = c.getProduct().getDiscountPrice() * c.getQuantity();
-            c.setTotalPrice(totalPrice);
-            totalOrderPrice += totalPrice;
-            c.setTotalOrderPrice(totalOrderPrice);
+            if (c.getProduct() != null) {
+                Double discountPrice = c.getProduct().getDiscountPrice();
+                if (discountPrice == null) {
+                    discountPrice = c.getProduct().getPrice();
+                }
+                Double totalPrice = discountPrice * c.getQuantity();
+                c.setTotalPrice(totalPrice);
+                totalOrderPrice += totalPrice;
+                c.setTotalOrderPrice(totalOrderPrice);
+            }
             updatedCarts.add(c);
         }
 

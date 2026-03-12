@@ -1,15 +1,5 @@
 package com.amarDokan.amarDokan.controller;
 
-import com.amarDokan.amarDokan.models.Category;
-import com.amarDokan.amarDokan.models.Product;
-import com.amarDokan.amarDokan.models.ProductOrder;
-import com.amarDokan.amarDokan.models.User;
-import com.amarDokan.amarDokan.service.*;
-import com.amarDokan.amarDokan.util.CommonUtil;
-import com.amarDokan.amarDokan.util.OrderStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +10,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -34,6 +24,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amarDokan.amarDokan.models.Category;
+import com.amarDokan.amarDokan.models.Product;
+import com.amarDokan.amarDokan.models.ProductOrder;
+import com.amarDokan.amarDokan.models.User;
+import com.amarDokan.amarDokan.service.CartService;
+import com.amarDokan.amarDokan.service.CategoryService;
+import com.amarDokan.amarDokan.service.OrderService;
+import com.amarDokan.amarDokan.service.ProductService;
+import com.amarDokan.amarDokan.service.UserService;
+import com.amarDokan.amarDokan.util.CommonUtil;
+import com.amarDokan.amarDokan.util.OrderStatus;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -62,19 +63,26 @@ public class AdminController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${image.upload.path:uploads/img}")
+    private String uploadPath;
+
     @ModelAttribute
     public void getUserDetails(Principal p, Model m) {
         if (p != null) {
             String email = p.getName();
             User userDtls = userService.getUserByEmail(email);
-            m.addAttribute("user", userDtls);
-            Integer countCart = cartService.getCountCart(userDtls.getId());
-            m.addAttribute("countCart", countCart);
-        }
 
-        List<Category> allActiveCategory = categoryService.getAllActiveCategory();
-        m.addAttribute("categorys", allActiveCategory);
+            if (userDtls != null) {
+                m.addAttribute("user", userDtls);
+                Integer countCart = cartService.getCountCart(userDtls.getId());
+                m.addAttribute("countCart", countCart);
+            }
     }
+
+    List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+    m.addAttribute("categorys", allActiveCategory);
+}
+
 
     @GetMapping("/")
     public String index() {
@@ -115,22 +123,28 @@ public class AdminController {
 
         Boolean existCategory = categoryService.existCategory(category.getName());
 
-        if (existCategory) {
+        if (existCategory)
             session.setAttribute("errorMsg", "Category Name already exists");
-        } else {
+        else {
 
             Category saveCategory = categoryService.saveCategory(category);
 
-            if (ObjectUtils.isEmpty(saveCategory)) {
+            if (ObjectUtils.isEmpty(saveCategory))
                 session.setAttribute("errorMsg", "Not saved ! internal server error");
-            } else {
+            else {
 
-                File saveFile = new ClassPathResource("static/img").getFile();
+                File saveFile = new File(uploadPath);
+                if (!saveFile.exists())
+                    saveFile.mkdirs();
 
                 Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
                         + file.getOriginalFilename());
 
-                // System.out.println(path);
+                File imgFolder = path.getParent().toFile();
+                if (!imgFolder.exists()) {
+                    imgFolder.mkdirs();
+                }
+
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
                 session.setAttribute("succMsg", "Saved successfully");
@@ -144,11 +158,11 @@ public class AdminController {
     public String deleteCategory(@PathVariable Long id, HttpSession session) {
         Boolean deleteCategory = categoryService.deleteCategory(id);
 
-        if (deleteCategory) {
+        if (deleteCategory)
             session.setAttribute("succMsg", "category delete success");
-        } else {
+        else 
             session.setAttribute("errorMsg", "something wrong on server");
-        }
+        
 
         return "redirect:/admin/category";
     }
@@ -178,19 +192,27 @@ public class AdminController {
         if (!ObjectUtils.isEmpty(updateCategory)) {
 
             if (!file.isEmpty()) {
-                File saveFile = new ClassPathResource("static/img").getFile();
+                File saveFile = new File(uploadPath);
+                if (!saveFile.exists()) 
+                    saveFile.mkdirs();
+                
 
                 Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
                         + file.getOriginalFilename());
 
-                // System.out.println(path);
+                File imgFolder = path.getParent().toFile();
+                if (!imgFolder.exists()) 
+                    imgFolder.mkdirs();
+                
+
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             }
 
             session.setAttribute("succMsg", "Category update success");
-        } else {
+        } 
+        else 
             session.setAttribute("errorMsg", "something wrong on server");
-        }
+        
 
         return "redirect:/admin/loadEditCategory/" + category.getId();
     }
@@ -207,19 +229,26 @@ public class AdminController {
         Product saveProduct = productService.saveProduct(product);
 
         if (!ObjectUtils.isEmpty(saveProduct)) {
+            if (!image.isEmpty()) {
+                File saveFile = new File(uploadPath);
+                if (!saveFile.exists())
+                    saveFile.mkdirs();
 
-            File saveFile = new ClassPathResource("static/img").getFile();
+                Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
+                        + image.getOriginalFilename());
 
-            Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
-                    + image.getOriginalFilename());
+                File imgFolder = path.getParent().toFile();
+                if (!imgFolder.exists())
+                    imgFolder.mkdirs();
 
-            // System.out.println(path);
-            Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            }
 
             session.setAttribute("succMsg", "Product Saved Success");
-        } else {
+        } 
+        else 
             session.setAttribute("errorMsg", "something wrong on server");
-        }
+        
 
         return "redirect:/admin/loadAddProduct";
     }
@@ -238,11 +267,11 @@ public class AdminController {
 //		m.addAttribute("products", products);
 
         Page<Product> page = null;
-        if (ch != null && ch.length() > 0) {
+        if (ch != null && ch.length() > 0)
             page = productService.searchProductPagination(pageNo, pageSize, ch);
-        } else {
+        else
             page = productService.getAllProductsPagination(pageNo, pageSize);
-        }
+        
         m.addAttribute("products", page.getContent());
 
         m.addAttribute("pageNo", page.getNumber());
@@ -258,11 +287,10 @@ public class AdminController {
     @GetMapping("/deleteProduct/{id}")
     public String deleteProduct(@PathVariable Long id, HttpSession session) {
         Boolean deleteProduct = productService.deleteProduct(id);
-        if (deleteProduct) {
+        if (deleteProduct)
             session.setAttribute("succMsg", "Product delete success");
-        } else {
+        else 
             session.setAttribute("errorMsg", "Something wrong on server");
-        }
         return "redirect:/admin/products";
     }
 
@@ -277,15 +305,15 @@ public class AdminController {
     public String updateProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
                                 HttpSession session, Model m) {
 
-        if (product.getDiscount() < 0 || product.getDiscount() > 100) {
+        if (product.getDiscount() < 0 || product.getDiscount() > 100)
             session.setAttribute("errorMsg", "invalid Discount");
-        } else {
+        else {
             Product updateProduct = productService.updateProduct(product, image);
-            if (!ObjectUtils.isEmpty(updateProduct)) {
+            if (!ObjectUtils.isEmpty(updateProduct))
                 session.setAttribute("succMsg", "Product update success");
-            } else {
+            else 
                 session.setAttribute("errorMsg", "Something wrong on server");
-            }
+            
         }
         return "redirect:/admin/editProduct/" + product.getId();
     }
@@ -293,14 +321,14 @@ public class AdminController {
     @GetMapping("/users")
     public String getAllUsers(Model m, @RequestParam Integer type) {
         List<User> users = null;
-        if (type == 1) {
+        if (type == 1) 
             users = userService.getUsers("ROLE_USER");
-        } else {
+        else 
             users = userService.getUsers("ROLE_ADMIN");
-        }
+        
         m.addAttribute("userType",type);
         m.addAttribute("users", users);
-        return "/admin/users";
+        return "admin/users";
     }
 
     @GetMapping("/updateSts")
@@ -332,7 +360,7 @@ public class AdminController {
         m.addAttribute("isFirst", page.isFirst());
         m.addAttribute("isLast", page.isLast());
 
-        return "/admin/orders";
+        return "admin/orders";
     }
 
     @PostMapping("/update-order-status")
@@ -397,18 +425,23 @@ public class AdminController {
             m.addAttribute("isLast", page.isLast());
 
         }
-        return "/admin/orders";
+        return "admin/orders";
 
     }
 
     @GetMapping("/add-admin")
     public String loadAdminAdd() {
-        return "/admin/add_admin";
+        return "admin/add_admin";
     }
 
     @PostMapping("/save-admin")
     public String saveAdmin(@ModelAttribute User user, @RequestParam("img") MultipartFile file, HttpSession session)
             throws IOException {
+        Boolean existsEmail = userService.existsEmail(user.getEmail());
+        if (existsEmail) {
+            session.setAttribute("errorMsg", "Email already exists");
+            return "redirect:/admin/add-admin";
+        }
 
         String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
         user.setProfileImage(imageName);
@@ -416,12 +449,19 @@ public class AdminController {
 
         if (!ObjectUtils.isEmpty(saveUser)) {
             if (!file.isEmpty()) {
-                File saveFile = new ClassPathResource("static/img").getFile();
+                File saveFile = new File(uploadPath);
+                if (!saveFile.exists()) {
+                    saveFile.mkdirs();
+                }
 
                 Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
                         + file.getOriginalFilename());
 
-//				System.out.println(path);
+                File imgFolder = path.getParent().toFile();
+                if (!imgFolder.exists()) {
+                    imgFolder.mkdirs();
+                }
+
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             }
             session.setAttribute("succMsg", "Register successfully");
@@ -434,7 +474,7 @@ public class AdminController {
 
     @GetMapping("/profile")
     public String profile() {
-        return "/admin/profile";
+        return "admin/profile";
     }
 
     @PostMapping("/update-profile")

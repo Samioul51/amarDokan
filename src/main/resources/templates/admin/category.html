@@ -93,48 +93,6 @@
 										</tbody>
 									</table>
 ... (rest of the file)
-<script>
-document.getElementById('categoryForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const msg = document.getElementById('msg');
-    
-    fetch('/api/categories', {
-        method: 'POST',
-        body: formData
-    }).then(response => {
-        if (response.status === 201) {
-            msg.className = 'text-success fw-bold';
-            msg.innerText = 'Saved successfully';
-            setTimeout(() => location.reload(), 1000);
-        } else if (response.status === 409) {
-            msg.className = 'text-danger fw-bold';
-            msg.innerText = 'Category name already exists';
-        } else {
-            msg.className = 'text-danger fw-bold';
-            msg.innerText = 'Something went wrong on server';
-        }
-    }).catch(error => {
-        msg.className = 'text-danger fw-bold';
-        msg.innerText = 'Error: ' + error.message;
-    });
-});
-
-function deleteCategory(id) {
-    if (confirm('Are you sure you want to delete this category?')) {
-        fetch('/api/categories/' + id, {
-            method: 'DELETE'
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert('Failed to delete category');
-            }
-        });
-    }
-}
-</script>
-
 							<div class="row">
 								<div class="col-md-4">Total Category :
 									[[${totalElements}]]</div>
