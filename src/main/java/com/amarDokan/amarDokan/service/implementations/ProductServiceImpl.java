@@ -8,7 +8,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +30,19 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @org.springframework.beans.factory.annotation.Value("${image.upload.path:uploads/img}")
+    private String uploadPath;
+
     @Override
     public Product saveProduct(Product product) {
+        if (product.getCategory() == null || product.getCategory().getId() == null)
+            return null;
+
+        Category category = categoryRepository.findById(product.getCategory().getId()).orElse(null);
+        if (ObjectUtils.isEmpty(category))
+            return null;
+
+        product.setCategory(category);
         return productRepository.save(product);
     }
 
@@ -70,11 +80,17 @@ public class ProductServiceImpl implements ProductService {
         if (ObjectUtils.isEmpty(dbProduct))
             return null;
 
-        String imageName = image.isEmpty() ? dbProduct.getImage() : image.getOriginalFilename();
+        boolean hasImage = image != null && !image.isEmpty();
+        String imageName = hasImage ? image.getOriginalFilename() : dbProduct.getImage();
+        Category category = null;
+        if (product.getCategory() != null && product.getCategory().getId() != null)
+            category = categoryRepository.findById(product.getCategory().getId()).orElse(null);
+        if (ObjectUtils.isEmpty(category))
+            return null;
 
         dbProduct.setTitle(product.getTitle());
         dbProduct.setDescription(product.getDescription());
-        dbProduct.setCategory(product.getCategory());
+        dbProduct.setCategory(category);
         dbProduct.setPrice(product.getPrice());
         dbProduct.setStock(product.getStock());
         dbProduct.setImage(imageName);
@@ -87,11 +103,19 @@ public class ProductServiceImpl implements ProductService {
 
         Product updatedProduct = productRepository.save(dbProduct);
 
-        if (!ObjectUtils.isEmpty(updatedProduct) && !image.isEmpty()) {
+        if (!ObjectUtils.isEmpty(updatedProduct) && hasImage) {
             try {
-                File saveFile = new ClassPathResource("static/img").getFile();
+                File saveFile = new File(uploadPath);
+                if (!saveFile.exists()) 
+                    saveFile.mkdirs();
+                
                 Path path = Paths.get(saveFile.getAbsolutePath() + File.separator
                         + "product_img" + File.separator + image.getOriginalFilename());
+                
+                File imgFolder = path.getParent().toFile();
+                if (!imgFolder.exists()) 
+                    imgFolder.mkdirs();
+                
                 Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
                 e.printStackTrace();

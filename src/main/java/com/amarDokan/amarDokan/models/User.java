@@ -1,5 +1,6 @@
 package com.amarDokan.amarDokan.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class User {
 
     private String pincode;
 
+    @JsonIgnore
     private String password;
 
     private String profileImage;
@@ -47,11 +49,14 @@ public class User {
 
     private LocalDateTime lockTime;
 
+    @JsonIgnore
     private String resetToken;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cart> cartItems;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductOrder> orders;
 }

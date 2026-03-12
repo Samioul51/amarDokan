@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -32,6 +32,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${image.upload.path:uploads/img}")
+    private String uploadPath;
+
     @Override
     public User saveUser(User user) {
         user.setRole("ROLE_USER");
@@ -52,6 +55,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUsers(String role) {
+        if (ObjectUtils.isEmpty(role))
+            return userRepository.findAll();
+
         return userRepository.findByRole(role);
     }
 
@@ -146,9 +152,19 @@ public class UserServiceImpl implements UserService {
 
             try {
                 if (!img.isEmpty()) {
-                    File saveFile = new ClassPathResource("static/img").getFile();
+                    File saveFile = new File(uploadPath);
+                    if (!saveFile.exists()) {
+                        saveFile.mkdirs();
+                    }
+
                     Path path = Paths.get(saveFile.getAbsolutePath() + File.separator
                             + "profile_img" + File.separator + img.getOriginalFilename());
+
+                    File imgFolder = path.getParent().toFile();
+                    if (!imgFolder.exists()) {
+                        imgFolder.mkdirs();
+                    }
+
                     Files.copy(img.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (Exception e) {

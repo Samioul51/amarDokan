@@ -28,7 +28,7 @@
 						</div>
 						<div class="card-body">
 							<p id="msg" class="fw-bold"></p>
-							<form id="productForm" enctype="multipart/form-data">
+							<form id="productForm" method="post" enctype="multipart/form-data">
 								<div class="mb-3">
 									<label>Enter Title</label> <input type="text" name="title" class="form-control"
 										required>
@@ -89,29 +89,6 @@
 		</div>
 	</section>
 </body>
-<script>
-	document.getElementById('productForm').addEventListener('submit', function (e) {
-		e.preventDefault();
-		const formData = new FormData(this);
-		const msg = document.getElementById('msg');
 
-		fetch('/api/products', {
-			method: 'POST',
-			body: formData
-		}).then(response => {
-			if (response.status === 201) {
-				msg.className = 'text-success fw-bold';
-				msg.innerText = 'Saved successfully';
-				setTimeout(() => location.reload(), 1000);
-			} else {
-				msg.className = 'text-danger fw-bold';
-				msg.innerText = 'Something went wrong on server';
-			}
-		}).catch(error => {
-			msg.className = 'text-danger fw-bold';
-			msg.innerText = 'Error: ' + error.message;
-		});
-	});
-</script>
 
 </html>

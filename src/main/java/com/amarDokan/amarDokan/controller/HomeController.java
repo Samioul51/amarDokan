@@ -22,7 +22,7 @@ import com.amarDokan.amarDokan.service.ProductService;
 import com.amarDokan.amarDokan.service.UserService;
 import com.amarDokan.amarDokan.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -60,6 +60,9 @@ public class HomeController {
     @Autowired
     private CartService cartService;
 
+    @Value("${image.upload.path:uploads/img}")
+    private String uploadPath;
+
     @ModelAttribute
     public void getUserDetails(Principal p, Model m) {
         if (p != null) {
@@ -92,7 +95,7 @@ public class HomeController {
     }
 
   //  @ResponseBody
-    @GetMapping("/signin")
+    @GetMapping({"/signin", "/login"})
     public String login() {
        return "login";
       //  return "Login page is here";
@@ -118,12 +121,11 @@ public class HomeController {
 //		List<Product> products = productService.getAllActiveProducts(category);
 //		m.addAttribute("products", products);
         Page<Product> page = null;
-        if (StringUtils.isEmpty(ch)) {
+        if (StringUtils.isEmpty(ch))
             page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
-        } else {
+        else 
             page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
-        }
-
+        
         List<Product> products = page.getContent();
         m.addAttribute("products", products);
         m.addAttribute("productsSize", products.size());
@@ -151,27 +153,32 @@ public class HomeController {
 
         Boolean existsEmail = userService.existsEmail(user.getEmail());
 
-        if (existsEmail) {
+        if (existsEmail)
             session.setAttribute("errorMsg", "Email already exist");
-        } else {
+        else {
             String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
             user.setProfileImage(imageName);
             User saveUser = userService.saveUser(user);
 
             if (!ObjectUtils.isEmpty(saveUser)) {
                 if (!file.isEmpty()) {
-                    File saveFile = new ClassPathResource("static/img").getFile();
+                    File saveFile = new File(uploadPath);
+                    if (!saveFile.exists())
+                        saveFile.mkdirs();
 
                     Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
                             + file.getOriginalFilename());
 
-//					System.out.println(path);
+                    File imgFolder = path.getParent().toFile();
+                    if (!imgFolder.exists())
+                        imgFolder.mkdirs();
+                    
                     Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 }
                 session.setAttribute("succMsg", "Register successfully");
-            } else {
+            } 
+            else 
                 session.setAttribute("errorMsg", "something wrong on server");
-            }
         }
 
         return "redirect:/register";
@@ -190,9 +197,9 @@ public class HomeController {
 
         User userByEmail = userService.getUserByEmail(email);
 
-        if (ObjectUtils.isEmpty(userByEmail)) {
+        if (ObjectUtils.isEmpty(userByEmail)) 
             session.setAttribute("errorMsg", "Invalid email");
-        } else {
+        else {
 
             String resetToken = UUID.randomUUID().toString();
             userService.updateUserResetToken(email, resetToken);
@@ -204,11 +211,11 @@ public class HomeController {
 
             Boolean sendMail = commonUtil.sendMail(url, email);
 
-            if (sendMail) {
+            if (sendMail) 
                 session.setAttribute("succMsg", "Please check your email..Password Reset link sent");
-            } else {
+            else 
                 session.setAttribute("errorMsg", "Somethong wrong on server ! Email not send");
-            }
+            
         }
 
         return "redirect:/forgot-password";
@@ -235,7 +242,8 @@ public class HomeController {
         if (userByToken == null) {
             m.addAttribute("errorMsg", "Your link is invalid or expired !!");
             return "message";
-        } else {
+        } 
+        else {
 //            userByToken.setPassword(passwordEncoder.encode(password));
 //            userByToken.setResetToken(null);
 //            userService.updateUser(userByToken);

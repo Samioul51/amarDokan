@@ -253,6 +253,175 @@ $resetPassword.validate({
 })
 
 
+$(function () {
+    const productForm = document.getElementById('productForm');
+
+    if (productForm) {
+        productForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const msg = document.getElementById('msg');
+
+            try {
+                const response = await fetch('/api/products', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                let message = 'Something went wrong on server';
+                try {
+                    const payload = await response.json();
+                    if (payload && payload.message) {
+                        message = payload.message;
+                    }
+                } catch (err) {
+                }
+
+                if (response.status === 201) {
+                    msg.className = 'text-success fw-bold';
+                    msg.innerText = 'Saved successfully';
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    msg.className = 'text-danger fw-bold';
+                    msg.innerText = message;
+                }
+            } catch (error) {
+                msg.className = 'text-danger fw-bold';
+                msg.innerText = 'Error: ' + error.message;
+            }
+        });
+    }
+});
+
+$(function () {
+    const categoryForm = document.getElementById('categoryForm');
+
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const msg = document.getElementById('msg');
+
+            try {
+                const response = await fetch('/api/categories', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                let message = 'Something went wrong on server';
+                try {
+                    const payload = await response.json();
+                    if (payload && payload.message) {
+                        message = payload.message;
+                    }
+                } catch (err) {
+                }
+
+                if (response.status === 201) {
+                    msg.className = 'text-success fw-bold';
+                    msg.innerText = 'Saved successfully';
+                    setTimeout(() => location.reload(), 1000);
+                } else if (response.status === 409) {
+                    msg.className = 'text-danger fw-bold';
+                    msg.innerText = 'Category name already exists';
+                } else {
+                    msg.className = 'text-danger fw-bold';
+                    msg.innerText = message;
+                }
+            } catch (error) {
+                msg.className = 'text-danger fw-bold';
+                msg.innerText = 'Error: ' + error.message;
+            }
+        });
+    }
+});
+
+window.updateStatus = async function (id, status) {
+    try {
+        const response = await fetch(`/api/users/${id}/status?status=${status}`, {
+            method: 'PUT'
+        });
+
+        let message = 'Failed to update status';
+        try {
+            const payload = await response.json();
+            if (payload && payload.message) {
+                message = payload.message;
+            }
+        } catch (err) {
+        }
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert(message);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+};
+
+window.deleteCategory = async function (id) {
+    if (!confirm('Are you sure you want to delete this category?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/categories/' + id, {
+            method: 'DELETE'
+        });
+
+        let message = 'Failed to delete category';
+        try {
+            const payload = await response.json();
+            if (payload && payload.message) {
+                message = payload.message;
+            }
+        } catch (err) {
+        }
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert(message);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+};
+
+window.deleteProduct = async function (id) {
+    if (!confirm('Are you sure you want to delete this product?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/products/' + id, {
+            method: 'DELETE'
+        });
+
+        let message = 'Failed to delete product';
+        try {
+            const payload = await response.json();
+            if (payload && payload.message) {
+                message = payload.message;
+            }
+        } catch (err) {
+        }
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert(message);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+};
+
+
 
 jQuery.validator.addMethod('lettersonly', function(value, element) {
 		return /^[^-\s][a-zA-Z_\s-]+$/.test(value);

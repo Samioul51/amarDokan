@@ -1,5 +1,6 @@
 package com.amarDokan.amarDokan.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class Product {
     private String description;
 
     @ManyToOne
+    @JsonIgnoreProperties({"products"})
     @JoinColumn(name = "category_id")
     private Category category;
 
