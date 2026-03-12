@@ -40,6 +40,16 @@ public class OrderServiceImpl implements OrderService {
 
         List<Cart> carts = cartRepository.findByUserId(userid);
 
+        OrderAddress address = new OrderAddress();
+        address.setFirstName(orderRequest.getFirstName());
+        address.setLastName(orderRequest.getLastName());
+        address.setEmail(orderRequest.getEmail());
+        address.setMobileNo(orderRequest.getMobileNo());
+        address.setAddress(orderRequest.getAddress());
+        address.setCity(orderRequest.getCity());
+        address.setState(orderRequest.getState());
+        address.setPincode(orderRequest.getPincode());
+
         for (Cart cart : carts) {
             ProductOrder order = new ProductOrder();
 
@@ -55,22 +65,9 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(OrderStatus.IN_PROGRESS.getName());
             order.setPaymentType(orderRequest.getPaymentType());
 
-            OrderAddress address = new OrderAddress();
-            address.setFirstName(orderRequest.getFirstName());
-            address.setLastName(orderRequest.getLastName());
-            address.setEmail(orderRequest.getEmail());
-            address.setMobileNo(orderRequest.getMobileNo());
-            address.setAddress(orderRequest.getAddress());
-            address.setCity(orderRequest.getCity());
-            address.setState(orderRequest.getState());
-            address.setPincode(orderRequest.getPincode());
-
             order.setOrderAddress(address);
 
-            ProductOrder savedOrder = orderRepository.save(order);
-
-            // Sending order success email
-           // commonUtil.sendMailForProductOrder(savedOrder, "Success");
+            orderRepository.save(order);
         }
 
         if (!carts.isEmpty())

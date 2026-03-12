@@ -16,10 +16,20 @@
 /* Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+html, body {
+	height: 100%;
+}
+
 body {
 	font-family: 'Poppins', sans-serif;
 	background-color: #f8f9fa;
 	padding-top: 85px; /* Fixed nav overlap */
+	display: flex;
+	flex-direction: column;
+}
+
+main {
+	flex: 1 0 auto;
 }
 
 
@@ -100,7 +110,7 @@ body {
 	background: #343a40 !important;
 	color: #fff;
 	padding: 40px 0;
-	margin-top: 100px;
+	flex-shrink: 0;
 }
 
 

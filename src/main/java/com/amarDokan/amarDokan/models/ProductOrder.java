@@ -37,7 +37,7 @@ public class ProductOrder {
 
     private String paymentType;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private OrderAddress orderAddress;
 }
