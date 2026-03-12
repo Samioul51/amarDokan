@@ -1,0 +1,148 @@
+@charset "ISO-8859-1";
+
+.card-sh {
+	box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cat-div {
+	box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+}
+
+.error {
+	color: red;
+}
+
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+body{
+	font-family: 'Poppins', sans-serif;
+	background-color: #FFF8F0;
+}
+
+
+/* Navbar Modern Look */
+
+.navbar{
+	padding: 12px 25px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+	backdrop-filter: blur(10px);
+}
+
+
+.bg-primary{
+	background: linear-gradient(135deg,#8C5A3C,#C08552) !important;
+}
+
+.navbar-brand{
+	font-weight: 600;
+	font-size: 20px;
+	letter-spacing: .5px;
+}
+
+.navbar .nav-link{
+	font-weight: 500;
+	margin-right: 10px;
+	position: relative;
+	transition: all .3s ease;
+}
+
+.footer{
+	font-weight: 600;
+	font-size: 20px;
+	letter-spacing: .5px;
+}
+
+
+/* Smooth underline hover */
+
+.navbar .nav-link::after{
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -4px;
+	width: 0%;
+	height: 2px;
+	background: white;
+	transition: 0.3s;
+}
+
+.navbar .nav-link:hover::after{
+	width: 100%;
+}
+
+.navbar .nav-link:hover{
+	opacity: 0.85;
+}
+
+
+/* Dropdown Menu Modern */
+
+.dropdown-menu{
+	border: none;
+	border-radius: 12px;
+	box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+	padding: 8px;
+}
+
+.dropdown-item{
+	border-radius: 8px;
+	transition: all .25s ease;
+}
+
+.dropdown-item:hover{
+	background-color: #f1f4ff;
+	padding-left: 18px;
+}
+
+
+
+/* Cart Badge Style */
+
+.navbar .fa-cart-shopping{
+	margin-right: 4px;
+}
+
+
+/* Footer Modern */
+
+.container-fluid.bg-primary{
+	box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+	font-weight: 500;
+	letter-spacing: .5px;
+}
+
+
+/* Smooth page spacing */
+
+body{
+	padding-top: 70px;
+}
+
+
+/* Buttons modern feel */
+
+.btn{
+	border-radius: 8px;
+	font-weight: 500;
+	transition: all .25s ease;
+}
+
+.btn:hover{
+	transform: translateY(-1px);
+	box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+
+/* Dropdown user icon spacing */
+
+.fa-user{
+	margin-right: 5px;
+}
+
+
+/* Smooth transitions globally */
+
+*{
+	transition: all 0.2s ease;
+}
