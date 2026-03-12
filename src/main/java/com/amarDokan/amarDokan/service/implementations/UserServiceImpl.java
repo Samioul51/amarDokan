@@ -55,8 +55,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUsers(String role) {
-        if (ObjectUtils.isEmpty(role))
+        if (ObjectUtils.isEmpty(role)) {
             return userRepository.findAll();
+        }
 
         return userRepository.findByRole(role);
     }
@@ -145,8 +146,9 @@ public class UserServiceImpl implements UserService {
             dbUser.setState(user.getState());
             dbUser.setPincode(user.getPincode());
 
-            if (!img.isEmpty())
+            if (!img.isEmpty()) {
                 dbUser.setProfileImage(img.getOriginalFilename());
+            }
 
             dbUser = userRepository.save(dbUser);
 
@@ -182,8 +184,8 @@ public class UserServiceImpl implements UserService {
         user.setAccountNonLocked(true);
         user.setFailedAttempt(0);
 
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+        String encodePassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodePassword);
 
         return userRepository.save(user);
     }
