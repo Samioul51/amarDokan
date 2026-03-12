@@ -4,10 +4,10 @@ services:
     ports:
       - '8081:8081'
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
-      - SPRING_DATASOURCE_USERNAME=myuser
-      - SPRING_DATASOURCE_PASSWORD=secret
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/amarDokan
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
       - IMAGE_UPLOAD_PATH=/app/uploads/img
     volumes:
       - ./uploads:/app/uploads
@@ -17,9 +17,9 @@ services:
   postgres:
     image: 'postgres:latest'
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - 'POSTGRES_DB=amarDokan'
+      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_USER=admin'
       - 'PGDATA=/var/lib/postgresql/data/pgdata'
     ports:
       - '5432:5432'
