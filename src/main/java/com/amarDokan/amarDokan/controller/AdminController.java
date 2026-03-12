@@ -77,12 +77,11 @@ public class AdminController {
                 Integer countCart = cartService.getCountCart(userDtls.getId());
                 m.addAttribute("countCart", countCart);
             }
+        }
+
+        List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+        m.addAttribute("categorys", allActiveCategory);
     }
-
-    List<Category> allActiveCategory = categoryService.getAllActiveCategory();
-    m.addAttribute("categorys", allActiveCategory);
-}
-
 
     @GetMapping("/")
     public String index() {
@@ -98,7 +97,7 @@ public class AdminController {
 
     @GetMapping("/category")
     public String category(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         // m.addAttribute("categorys", categoryService.getAllCategory());
         Page<Category> page = categoryService.getAllCategorPagination(pageNo, pageSize);
         List<Category> categorys = page.getContent();
@@ -116,26 +115,27 @@ public class AdminController {
 
     @PostMapping("/saveCategory")
     public String saveCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
-                               HttpSession session) throws IOException {
+            HttpSession session) throws IOException {
 
         String imageName = file != null ? file.getOriginalFilename() : "default.jpg";
         category.setImageName(imageName);
 
         Boolean existCategory = categoryService.existCategory(category.getName());
 
-        if (existCategory)
+        if (existCategory) {
             session.setAttribute("errorMsg", "Category Name already exists");
-        else {
+        } else {
 
             Category saveCategory = categoryService.saveCategory(category);
 
-            if (ObjectUtils.isEmpty(saveCategory))
+            if (ObjectUtils.isEmpty(saveCategory)) {
                 session.setAttribute("errorMsg", "Not saved ! internal server error");
-            else {
+            } else {
 
                 File saveFile = new File(uploadPath);
-                if (!saveFile.exists())
+                if (!saveFile.exists()) {
                     saveFile.mkdirs();
+                }
 
                 Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
                         + file.getOriginalFilename());
@@ -158,11 +158,11 @@ public class AdminController {
     public String deleteCategory(@PathVariable Long id, HttpSession session) {
         Boolean deleteCategory = categoryService.deleteCategory(id);
 
-        if (deleteCategory)
+        if (deleteCategory) {
             session.setAttribute("succMsg", "category delete success");
-        else 
+        } else {
             session.setAttribute("errorMsg", "something wrong on server");
-        
+        }
 
         return "redirect:/admin/category";
     }
@@ -175,7 +175,7 @@ public class AdminController {
 
     @PostMapping("/updateCategory")
     public String updateCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
-                                 HttpSession session) throws IOException {
+            HttpSession session) throws IOException {
 
         Category oldCategory = categoryService.getCategoryById(category.getId());
         String imageName = file.isEmpty() ? oldCategory.getImageName() : file.getOriginalFilename();
@@ -193,33 +193,32 @@ public class AdminController {
 
             if (!file.isEmpty()) {
                 File saveFile = new File(uploadPath);
-                if (!saveFile.exists()) 
+                if (!saveFile.exists()) {
                     saveFile.mkdirs();
-                
+                }
 
                 Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
                         + file.getOriginalFilename());
 
                 File imgFolder = path.getParent().toFile();
-                if (!imgFolder.exists()) 
+                if (!imgFolder.exists()) {
                     imgFolder.mkdirs();
-                
+                }
 
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             }
 
             session.setAttribute("succMsg", "Category update success");
-        } 
-        else 
+        } else {
             session.setAttribute("errorMsg", "something wrong on server");
-        
+        }
 
         return "redirect:/admin/loadEditCategory/" + category.getId();
     }
 
     @PostMapping("/saveProduct")
     public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
-                              HttpSession session) throws IOException {
+            HttpSession session) throws IOException {
 
         String imageName = image.isEmpty() ? "default.jpg" : image.getOriginalFilename();
 
@@ -231,32 +230,33 @@ public class AdminController {
         if (!ObjectUtils.isEmpty(saveProduct)) {
             if (!image.isEmpty()) {
                 File saveFile = new File(uploadPath);
-                if (!saveFile.exists())
+                if (!saveFile.exists()) {
                     saveFile.mkdirs();
+                }
 
                 Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
                         + image.getOriginalFilename());
 
                 File imgFolder = path.getParent().toFile();
-                if (!imgFolder.exists())
+                if (!imgFolder.exists()) {
                     imgFolder.mkdirs();
+                }
 
                 Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             }
 
             session.setAttribute("succMsg", "Product Saved Success");
-        } 
-        else 
+        } else {
             session.setAttribute("errorMsg", "something wrong on server");
-        
+        }
 
         return "redirect:/admin/loadAddProduct";
     }
 
     @GetMapping("/products")
     public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
-                                  @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                                  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+            @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
 //		List<Product> products = null;
 //		if (ch != null && ch.length() > 0) {
@@ -265,13 +265,13 @@ public class AdminController {
 //			products = productService.getAllProducts();
 //		}
 //		m.addAttribute("products", products);
-
         Page<Product> page = null;
-        if (ch != null && ch.length() > 0)
+        if (ch != null && ch.length() > 0) {
             page = productService.searchProductPagination(pageNo, pageSize, ch);
-        else
+        } else {
             page = productService.getAllProductsPagination(pageNo, pageSize);
-        
+        }
+
         m.addAttribute("products", page.getContent());
 
         m.addAttribute("pageNo", page.getNumber());
@@ -287,10 +287,11 @@ public class AdminController {
     @GetMapping("/deleteProduct/{id}")
     public String deleteProduct(@PathVariable Long id, HttpSession session) {
         Boolean deleteProduct = productService.deleteProduct(id);
-        if (deleteProduct)
+        if (deleteProduct) {
             session.setAttribute("succMsg", "Product delete success");
-        else 
+        } else {
             session.setAttribute("errorMsg", "Something wrong on server");
+        }
         return "redirect:/admin/products";
     }
 
@@ -303,17 +304,18 @@ public class AdminController {
 
     @PostMapping("/updateProduct")
     public String updateProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
-                                HttpSession session, Model m) {
+            HttpSession session, Model m) {
 
-        if (product.getDiscount() < 0 || product.getDiscount() > 100)
+        if (product.getDiscount() < 0 || product.getDiscount() > 100) {
             session.setAttribute("errorMsg", "invalid Discount");
-        else {
+        } else {
             Product updateProduct = productService.updateProduct(product, image);
-            if (!ObjectUtils.isEmpty(updateProduct))
+            if (!ObjectUtils.isEmpty(updateProduct)) {
                 session.setAttribute("succMsg", "Product update success");
-            else 
+            } else {
                 session.setAttribute("errorMsg", "Something wrong on server");
-            
+            }
+
         }
         return "redirect:/admin/editProduct/" + product.getId();
     }
@@ -321,30 +323,31 @@ public class AdminController {
     @GetMapping("/users")
     public String getAllUsers(Model m, @RequestParam Integer type) {
         List<User> users = null;
-        if (type == 1) 
+        if (type == 1) {
             users = userService.getUsers("ROLE_USER");
-        else 
+        } else {
             users = userService.getUsers("ROLE_ADMIN");
-        
-        m.addAttribute("userType",type);
+        }
+
+        m.addAttribute("userType", type);
         m.addAttribute("users", users);
         return "admin/users";
     }
 
     @GetMapping("/updateSts")
-    public String updateUserAccountStatus(@RequestParam Boolean status, @RequestParam Long id,@RequestParam Integer type, HttpSession session) {
+    public String updateUserAccountStatus(@RequestParam Boolean status, @RequestParam Long id, @RequestParam Integer type, HttpSession session) {
         Boolean f = userService.updateAccountStatus(id, status);
         if (f) {
             session.setAttribute("succMsg", "Account Status Updated");
         } else {
             session.setAttribute("errorMsg", "Something wrong on server");
         }
-        return "redirect:/admin/users?type="+type;
+        return "redirect:/admin/users?type=" + type;
     }
 
     @GetMapping("/orders")
     public String getAllOrders(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 //		List<ProductOrder> allOrders = orderService.getAllOrders();
 //		m.addAttribute("orders", allOrders);
 //		m.addAttribute("srch", false);
@@ -393,8 +396,8 @@ public class AdminController {
 
     @GetMapping("/search-order")
     public String searchProduct(@RequestParam String orderId, Model m, HttpSession session,
-                                @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+            @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
         if (orderId != null && orderId.length() > 0) {
 
@@ -435,38 +438,69 @@ public class AdminController {
     }
 
     @PostMapping("/save-admin")
-    public String saveAdmin(@ModelAttribute User user, @RequestParam("img") MultipartFile file, HttpSession session)
-            throws IOException {
-        Boolean existsEmail = userService.existsEmail(user.getEmail());
-        if (existsEmail) {
+    public String saveAdmin(
+            @RequestParam String name,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String mobileNumber,
+            @RequestParam String address,
+            @RequestParam String city,
+            @RequestParam String state,
+            @RequestParam String pincode,
+            @RequestParam("img") MultipartFile file,
+            HttpSession session) throws IOException {
+
+        // email duplicate check
+        if (userService.existsEmail(email.trim())) {
             session.setAttribute("errorMsg", "Email already exists");
             return "redirect:/admin/add-admin";
         }
 
+        // image name
         String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
-        user.setProfileImage(imageName);
-        User saveUser = userService.saveAdmin(user);
+
+        // create new admin
+        User newAdmin = new User();
+        newAdmin.setName(name);
+        newAdmin.setEmail(email.trim());
+        newAdmin.setPassword(password);
+        newAdmin.setMobileNumber(mobileNumber);
+        newAdmin.setAddress(address);
+        newAdmin.setCity(city);
+        newAdmin.setState(state);
+        newAdmin.setPincode(pincode);
+        newAdmin.setProfileImage(imageName);
+
+        // save admin
+        User saveUser = userService.saveAdmin(newAdmin);
 
         if (!ObjectUtils.isEmpty(saveUser)) {
+
             if (!file.isEmpty()) {
+
                 File saveFile = new File(uploadPath);
+
                 if (!saveFile.exists()) {
                     saveFile.mkdirs();
                 }
 
-                Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
-                        + file.getOriginalFilename());
+                Path path = Paths.get(saveFile.getAbsolutePath()
+                        + File.separator + "profile_img"
+                        + File.separator + file.getOriginalFilename());
 
                 File imgFolder = path.getParent().toFile();
+
                 if (!imgFolder.exists()) {
                     imgFolder.mkdirs();
                 }
 
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             }
-            session.setAttribute("succMsg", "Register successfully");
+
+            session.setAttribute("succMsg", "Admin registered successfully");
+
         } else {
-            session.setAttribute("errorMsg", "something wrong on server");
+            session.setAttribute("errorMsg", "Something went wrong on server");
         }
 
         return "redirect:/admin/add-admin";
@@ -490,7 +524,7 @@ public class AdminController {
 
     @PostMapping("/change-password")
     public String changePassword(@RequestParam String newPassword, @RequestParam String currentPassword, Principal p,
-                                 HttpSession session) {
+            HttpSession session) {
         User loggedInUserDetails = commonUtil.getLoggedInUserDetails(p);
 
         boolean matches = passwordEncoder.matches(currentPassword, loggedInUserDetails.getPassword());
