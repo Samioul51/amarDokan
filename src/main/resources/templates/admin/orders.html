@@ -3,7 +3,7 @@
 	th:replace="~{base::layout(~{::section})}">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>All Orders</title>
 </head>
 <body>
 	<section>
@@ -109,7 +109,7 @@
 									</tr>
 								</th:block>
 								<th:block th:unless="${orderDtls!=null}">
-									<p class="fs-3 text-center text-danger">[[${errorMsg}]]</p>
+									<p class="fs-3 text-center text-danger">[[${session.errorMsg}]]</p>
 								</th:block>
 							</th:block>
 
@@ -182,8 +182,7 @@
 										</a></li>
 
 										<li th:each="i:${#numbers.sequence(1,totalPages)}"
-											class="page-item" th:classappend="${pageNo+1==i}?'active':''"
-											]]><a class="page-link"
+											class="page-item" th:classappend="${pageNo+1==i}?'active':''"><a class="page-link"
 											th:href="@{'/admin/orders?pageNo='+${i-1}}">[[${i}]]</a></li>
 
 										<li class="page-item"
