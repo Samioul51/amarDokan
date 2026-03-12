@@ -5,8 +5,16 @@ import com.amarDokan.amarDokan.service.CategoryService;
 import com.amarDokan.amarDokan.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @RestController
@@ -35,8 +43,21 @@ public class CategoryRestController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+    public ResponseEntity<Category> createCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file) throws IOException {
+        String imageName = file != null ? file.getOriginalFilename() : "default.jpg";
+        category.setImageName(imageName);
+
+        Boolean existCategory = categoryService.existCategory(category.getName());
+        if (existCategory) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
         Category savedCategory = categoryService.saveCategory(category);
+        if (savedCategory != null && file != null && !file.isEmpty()) {
+            File saveFile = new ClassPathResource("static/img").getFile();
+            Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator + file.getOriginalFilename());
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        }
         return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
     }
 
