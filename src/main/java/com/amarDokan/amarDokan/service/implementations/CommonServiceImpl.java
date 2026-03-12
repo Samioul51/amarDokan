@@ -10,7 +10,7 @@ import com.amarDokan.amarDokan.service.CommonService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-@Service
+@Service("commnServiceImpl")
 public class CommonServiceImpl implements CommonService {
 
     @Value("${taka.sign:৳}")

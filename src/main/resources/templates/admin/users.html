@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
 <meta charset="ISO-8859-1">
 <title>Admin Users</title>
 </head>
+
 <body>
 	<section>
 		<div class="container-fluid mt-5 p-5">
@@ -40,20 +41,21 @@
 						<tbody>
 							<tr th:each="u,c:${users}">
 								<th scope="row">[[${c.count}]]</th>
-								<td><img th:src="@{'/img/profile_img/'+${u.profileImage}}"
-									width="70px" height="70px"></td>
+								<td><img th:src="@{'/img/profile_img/'+${u.profileImage}}" width="70px" height="70px">
+								</td>
 								<td>[[${u.name}]]</td>
 								<td>[[${u.email}]]</td>
 								<td>[[${u.mobileNumber}]]</td>
 								<td>[[${u.address+','+u.city+','+u.state+','+u.pincode}]]</td>
 								<td>[[${u.isEnable}]]</td>
-								<td><a th:href="@{'/admin/updateSts?status=true&id='+${u.id}}+'&type='+${userType}"
-									class="btn btn-sm btn-primary">Active</a> 
-										
-									<a
-									th:href="@{'/admin/updateSts?status=false&id='+${u.id}}+'&type='+${userType}"
-									class="btn btn-sm btn-danger">
-										Inactive</a></td>
+								<td>
+									<button th:onclick="'updateStatus(' + ${u.id} + ', true)'"
+										class="btn btn-sm btn-primary">Active</button>
+
+									<button th:onclick="'updateStatus(' + ${u.id} + ', false)'"
+										class="btn btn-sm btn-danger">
+										Inactive</button>
+								</td>
 							</tr>
 
 						</tbody>
@@ -64,4 +66,20 @@
 
 	</section>
 </body>
+<script>
+	function updateStatus(id, status) {
+		fetch(`/api/users/${id}/status?status=${status}`, {
+			method: 'PUT'
+		}).then(response => {
+			if (response.ok) {
+				location.reload();
+			} else {
+				alert('Failed to update status');
+			}
+		}).catch(error => {
+			alert('Error: ' + error.message);
+		});
+	}
+</script>
+
 </html>

@@ -23,7 +23,7 @@
 
 					</th:block>
 					<div class="col-md-6 text-end">
-						<img alt="" th:src="@{'/img/product_img/'+${product.image}}" width="300px"
+						<img alt="" th:src="${#strings.startsWith(product.image, 'http')} ? ${product.image} : @{'/img/product_img/' + ${product.image}}" width="300px"
 							height="250px">
 					</div>
 
@@ -45,11 +45,12 @@
 							</th:block>
 
 
-							<br> Category: [[${product.category}]]<br> Policy : 7
-							Days Replacement & Return
+							<br> <span class="fw-bold">Category:</span> 
+							<span class="badge bg-primary rounded-pill">[[${product.category.name}]]</span>
+							<br> <span class="fw-bold">Policy:</span> 7 Days Replacement & Return
 						</p>
 						<p class="fs-5 fw-bold">
-							Price :&nbsp; &nbsp; &nbsp; &nbsp;<th:block th:utext="${@commnServiceImpl.rupeeSign()}"></th:block>
+							Price :&nbsp; &nbsp; &nbsp; &nbsp;<th:block th:utext="${@commnServiceImpl.takaSign()}"></th:block>
 							[[${product.discountPrice}]] <span
 								class="fs-6 text-decoration-line-through text-secondary">[[${product.price}]]</span>
 							<span class="fs-6  text-success">[[${product.discount}]]%

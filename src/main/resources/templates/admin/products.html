@@ -57,10 +57,10 @@
 						<tbody>
 							<tr th:each="p,c:${products}">
 								<th scope="row">[[${c.count}]]</th>
-								<td><img th:src="@{'/img/product_img/'+${p.image}}"
+								<td><img th:src="${#strings.startsWith(p.image, 'http')} ? ${p.image} : @{'/img/product_img/' + ${p.image}}"
 									width="70px" height="70px"></td>
 								<td>[[${p.title}]]</td>
-								<td>[[${p.category}]]</td>
+								<td>[[${p.category != null ? p.category.name : 'N/A'}]]</td>
 								<td>[[${p.price}]]</td>
 								<td>[[${p.discount}]]</td>
 								<td>[[${p.discountPrice}]]</td>
@@ -68,10 +68,10 @@
 								<td>[[${p.stock}]]</td>
 								<td><a th:href="@{'/admin/editProduct/'+${p.id}}"
 									class="btn btn-sm btn-primary"><i
-										class="fa-solid fa-pen-to-square"></i>Edit</a> <a
-									th:href="@{'/admin/deleteProduct/'+${p.id}}"
+										class="fa-solid fa-pen-to-square"></i>Edit</a> 
+									<button th:onclick="'deleteProduct(' + ${p.id} + ')'"
 									class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i>
-										Delete</a></td>
+										Delete</button></td>
 							</tr>
 
 						</tbody>
@@ -110,4 +110,19 @@
 		</div>
 	</section>
 </body>
+<script>
+function deleteProduct(id) {
+    if (confirm('Are you sure you want to delete this product?')) {
+        fetch('/api/products/' + id, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Failed to delete product');
+            }
+        });
+    }
+}
+</script>
 </html>
