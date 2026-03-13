@@ -7,7 +7,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/amarDokan
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - IMAGE_UPLOAD_PATH=/app/uploads/img
     volumes:
       - ./uploads:/app/uploads
