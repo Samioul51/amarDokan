@@ -76,7 +76,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "user@test.com", roles = {"USER"})
     void testUserHomePage() throws Exception {
         mockMvc.perform(get("/user/"))
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "user@test.com", roles = {"USER"})
     void testUserCartPage() throws Exception {
         mockMvc.perform(get("/user/cart"))
                 .andExpect(status().isOk())
@@ -92,7 +92,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "user@test.com", roles = {"USER"})
     void testUserOrdersPage() throws Exception {
         mockMvc.perform(get("/user/orders"))
                 .andExpect(status().isOk())
@@ -100,7 +100,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "user@test.com", roles = {"USER"})
     void testUserMyOrdersPage() throws Exception {
         mockMvc.perform(get("/user/user-orders"))
                 .andExpect(status().isOk())
@@ -108,7 +108,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "user@test.com", roles = {"USER"})
     void testUserProfilePage() throws Exception {
         mockMvc.perform(get("/user/profile"))
                 .andExpect(status().isOk())
