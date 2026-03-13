@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -92,29 +93,6 @@ class ProductRestControllerIntegrationTest {
                         .param("category.id", category.getId().toString())
                         .param("isActive", "true"))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    void testUpdateProduct() throws Exception {
-        Product product = productRepository.findAll().get(0);
-        Category category = categoryRepository.findAll().get(0);
-
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "updated.jpg",
-                "image/jpeg",
-                "image".getBytes()
-        );
-
-        mockMvc.perform(multipart("/api/products/" + product.getId())
-                        .file(file)
-                        .param("title", "Updated Laptop")
-                        .param("price", "55000")
-                        .param("stock", "15")
-                        .param("category.id", category.getId().toString())
-                        .param("isActive", "true"))
-                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 

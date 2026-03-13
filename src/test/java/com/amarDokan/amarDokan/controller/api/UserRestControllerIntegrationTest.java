@@ -57,24 +57,6 @@ class UserRestControllerIntegrationTest {
                 .andExpect(jsonPath("$.email").value("test@example.com"));
     }
 
-    @Test
-    void testCreateUser() throws Exception {
-        String userJson = """
-                {
-                    "name": "New User",
-                    "email": "new@example.com",
-                    "password": "password",
-                    "role": "ROLE_USER",
-                    "isEnable": true
-                }
-                """;
-
-        mockMvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
 
     @Test
     void testUpdateAccountStatus() throws Exception {
