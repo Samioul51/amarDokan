@@ -9,10 +9,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collector;
 
+import com.amarDokan.amarDokan.dto.request.UserRequestDto;
 import com.amarDokan.amarDokan.models.Category;
 import com.amarDokan.amarDokan.models.Product;
 import com.amarDokan.amarDokan.models.User;
@@ -24,14 +23,11 @@ import com.amarDokan.amarDokan.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.mail.MessagingException;
@@ -56,7 +52,6 @@ public class HomeController {
     //Comment out for testing purpose
 //    @Autowired
 //    private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     private CartService cartService;
 
@@ -91,28 +86,28 @@ public class HomeController {
         m.addAttribute("category", allActiveCategory);
         m.addAttribute("products", allActiveProducts);
         return "index";
-       // return "Hello World ! This is Home";
+        // return "Hello World ! This is Home";
     }
 
-  //  @ResponseBody
+    //  @ResponseBody
     @GetMapping({"/signin", "/login"})
     public String login() {
-       return "login";
-      //  return "Login page is here";
+        return "login";
+        //  return "Login page is here";
     }
 
-  //  @ResponseBody
+    //  @ResponseBody
     @GetMapping("/register")
     public String register() {
         return "register";
-      //  return "registration page is here";
+        //  return "registration page is here";
     }
 
     @GetMapping("/products")
     public String products(Model m, @RequestParam(value = "category", defaultValue = "") String category,
-                           @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                           @RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
-                           @RequestParam(defaultValue = "") String ch) {
+            @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
+            @RequestParam(defaultValue = "") String ch) {
 
         List<Category> categories = categoryService.getAllActiveCategory();
         m.addAttribute("paramValue", category);
@@ -121,11 +116,12 @@ public class HomeController {
 //		List<Product> products = productService.getAllActiveProducts(category);
 //		m.addAttribute("products", products);
         Page<Product> page = null;
-        if (StringUtils.isEmpty(ch))
-            page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
-        else 
+        if (StringUtils.isEmpty(ch)) {
+            page = productService.getAllActiveProductPagination(pageNo, pageSize, category); 
+        }else {
             page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
-        
+        }
+
         List<Product> products = page.getContent();
         m.addAttribute("products", products);
         m.addAttribute("productsSize", products.size());
@@ -148,31 +144,32 @@ public class HomeController {
     }
 
     @PostMapping("/saveUser")
-    public String saveUser(@ModelAttribute User user, @RequestParam("img") MultipartFile file, HttpSession session)
+    public String saveUser(@ModelAttribute UserRequestDto userRequestDto, @RequestParam("img") MultipartFile file, HttpSession session)
             throws IOException {
 
-        Boolean existsEmail = userService.existsEmail(user.getEmail());
+        Boolean existsEmail = userService.existsEmail(userRequestDto.getEmail());
 
-        if (existsEmail)
-            session.setAttribute("errorMsg", "Email already exist");
+        if (existsEmail) {
+            session.setAttribute("errorMsg", "Email already exist"); 
+        }
         else {
             String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
-            user.setProfileImage(imageName);
-            User saveUser = userService.saveUser(user);
+            User savedUser = userService.saveUserFromDto(userRequestDto, imageName);
 
-            if (!ObjectUtils.isEmpty(saveUser)) {
+            if (!ObjectUtils.isEmpty(savedUser)) {
                 if (!file.isEmpty()) {
                     File saveFile = new File(uploadPath);
-                    if (!saveFile.exists())
+                    if (!saveFile.exists()) 
                         saveFile.mkdirs();
 
                     Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
                             + file.getOriginalFilename());
 
                     File imgFolder = path.getParent().toFile();
-                    if (!imgFolder.exists())
+                    if (!imgFolder.exists()) {
                         imgFolder.mkdirs();
-                    
+                    }
+
                     Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 }
                 session.setAttribute("succMsg", "Register successfully");
@@ -184,8 +181,7 @@ public class HomeController {
         return "redirect:/register";
     }
 
-//	Forgot Password Code
-
+    //	Forgot Password Code
     @GetMapping("/forgot-password")
     public String showForgotPassword() {
         return "forgot_password.html";
@@ -197,25 +193,25 @@ public class HomeController {
 
         User userByEmail = userService.getUserByEmail(email);
 
-        if (ObjectUtils.isEmpty(userByEmail)) 
-            session.setAttribute("errorMsg", "Invalid email");
-        else {
+        if (ObjectUtils.isEmpty(userByEmail)) {
+            session.setAttribute("errorMsg", "Invalid email"); 
+        }else {
 
             String resetToken = UUID.randomUUID().toString();
             userService.updateUserResetToken(email, resetToken);
 
             // Generate URL :
             // http://localhost:8080/reset-password?token=sfgdbgfswegfbdgfewgvsrg
-
             String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
 
             Boolean sendMail = commonUtil.sendMail(url, email);
 
-            if (sendMail) 
-                session.setAttribute("succMsg", "Please check your email..Password Reset link sent");
-            else 
+            if (sendMail) {
+                session.setAttribute("succMsg", "Please check your email..Password Reset link sent"); 
+            }else {
                 session.setAttribute("errorMsg", "Somethong wrong on server ! Email not send");
-            
+            }
+
         }
 
         return "redirect:/forgot-password";
@@ -236,14 +232,13 @@ public class HomeController {
 
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam String token, @RequestParam String password, HttpSession session,
-                                Model m) {
+            Model m) {
 
         User userByToken = userService.getUserByToken(token);
         if (userByToken == null) {
             m.addAttribute("errorMsg", "Your link is invalid or expired !!");
             return "message";
-        } 
-        else {
+        } else {
 //            userByToken.setPassword(passwordEncoder.encode(password));
 //            userByToken.setResetToken(null);
 //            userService.updateUser(userByToken);

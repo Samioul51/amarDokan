@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amarDokan.amarDokan.dto.request.AdminCreateRequestDto;
+import com.amarDokan.amarDokan.dto.request.UserProfileUpdateDto;
 import com.amarDokan.amarDokan.models.Category;
 import com.amarDokan.amarDokan.models.Product;
 import com.amarDokan.amarDokan.models.ProductOrder;
@@ -438,46 +440,20 @@ public class AdminController {
     }
 
     @PostMapping("/save-admin")
-    public String saveAdmin(
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String mobileNumber,
-            @RequestParam String address,
-            @RequestParam String city,
-            @RequestParam String state,
-            @RequestParam String pincode,
+    public String saveAdmin(@ModelAttribute AdminCreateRequestDto adminDto,
             @RequestParam("img") MultipartFile file,
             HttpSession session) throws IOException {
 
-        // email duplicate check
-        if (userService.existsEmail(email.trim())) {
+        if (userService.existsEmail(adminDto.getEmail().trim())) {
             session.setAttribute("errorMsg", "Email already exists");
             return "redirect:/admin/add-admin";
         }
 
-        // image name
         String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
+        User savedUser = userService.saveAdminFromDto(adminDto, imageName);
 
-        // create new admin
-        User newAdmin = new User();
-        newAdmin.setName(name);
-        newAdmin.setEmail(email.trim());
-        newAdmin.setPassword(password);
-        newAdmin.setMobileNumber(mobileNumber);
-        newAdmin.setAddress(address);
-        newAdmin.setCity(city);
-        newAdmin.setState(state);
-        newAdmin.setPincode(pincode);
-        newAdmin.setProfileImage(imageName);
-
-        // save admin
-        User saveUser = userService.saveAdmin(newAdmin);
-
-        if (!ObjectUtils.isEmpty(saveUser)) {
-
+        if (!ObjectUtils.isEmpty(savedUser)) {
             if (!file.isEmpty()) {
-
                 File saveFile = new File(uploadPath);
 
                 if (!saveFile.exists()) {
@@ -498,7 +474,6 @@ public class AdminController {
             }
 
             session.setAttribute("succMsg", "Admin registered successfully");
-
         } else {
             session.setAttribute("errorMsg", "Something went wrong on server");
         }
@@ -512,8 +487,8 @@ public class AdminController {
     }
 
     @PostMapping("/update-profile")
-    public String updateProfile(@ModelAttribute User user, @RequestParam MultipartFile img, HttpSession session) {
-        User updateUserProfile = userService.updateUserProfile(user, img);
+    public String updateProfile(@ModelAttribute UserProfileUpdateDto userProfileUpdateDto, @RequestParam MultipartFile img, HttpSession session) {
+        User updateUserProfile = userService.updateUserProfileFromDto(userProfileUpdateDto, img);
         if (ObjectUtils.isEmpty(updateUserProfile)) {
             session.setAttribute("errorMsg", "Profile not updated");
         } else {

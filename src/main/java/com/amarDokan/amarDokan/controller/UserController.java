@@ -3,6 +3,7 @@ package com.amarDokan.amarDokan.controller;
 import java.security.Principal;
 import java.util.List;
 
+import com.amarDokan.amarDokan.dto.request.UserProfileUpdateDto;
 import com.amarDokan.amarDokan.models.*;
 import com.amarDokan.amarDokan.service.CartService;
 import com.amarDokan.amarDokan.service.CategoryService;
@@ -174,8 +175,8 @@ public class UserController {
     }
 
     @PostMapping("/update-profile")
-    public String updateProfile(@ModelAttribute User user, @RequestParam MultipartFile img, HttpSession session) {
-        User updateUserProfile = userService.updateUserProfile(user, img);
+    public String updateProfile(@ModelAttribute UserProfileUpdateDto userProfileUpdateDto, @RequestParam MultipartFile img, HttpSession session) {
+        User updateUserProfile = userService.updateUserProfileFromDto(userProfileUpdateDto, img);
         if (ObjectUtils.isEmpty(updateUserProfile)) {
             session.setAttribute("errorMsg", "Profile not updated");
         } else {
