@@ -57,7 +57,6 @@ class UserRestControllerIntegrationTest {
                 .andExpect(jsonPath("$.email").value("test@example.com"));
     }
 
-
     @Test
     void testUpdateAccountStatus() throws Exception {
         User user = userRepository.findAll().get(0);
@@ -65,4 +64,28 @@ class UserRestControllerIntegrationTest {
         mockMvc.perform(put("/api/users/" + user.getId() + "/status?status=false"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void testCreateUser() throws Exception {
+        String requestBody = """
+        {
+          "name": "New User",
+          "mobileNumber": "01700000000",
+          "email": "new@example.com",
+          "address": "Dhaka",
+          "city": "Dhaka",
+          "state": "Dhaka",
+          "pincode": "1207",
+          "password": "123456"
+        }
+        """;
+
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value("new@example.com"))
+                .andExpect(jsonPath("$.password").doesNotExist());
+    }
+
 }
