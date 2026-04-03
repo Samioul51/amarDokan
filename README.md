@@ -1,8 +1,14 @@
 # AmarDokan - E-Commerce Application
 
+<p align="center">
+<img src="src/main/resources/static/img/AmarDokan.png" width="400" height="200">
+</p>
+
 ## Project Description
 
 AmarDokan is a comprehensive e-commerce web application built as a group project for Software Engineering and Project Management course. The application provides a platform for users to browse products, manage shopping carts, place orders, and for administrators to manage products, categories, and user accounts. The system includes user authentication, product catalog management, order processing, and email notifications.
+
+### Authors : A.K.M Samioul Islam(2107051) & Pritom Banik(2107052)
 
 ## Technology Stack
 
@@ -26,38 +32,109 @@ AmarDokan is a comprehensive e-commerce web application built as a group project
 - **GitHub Actions** - CI/CD pipeline
 - **Lombok** - Code generation library
 
-## Architecture Diagram
+##  Architecture Overview
 
-```mermaid
-graph TB
-    A[Web Browser] --> B[Spring MVC Controller]
-    B --> C[Spring Security]
-    C --> D[Service Layer]
-    D --> E[Repository Layer]
-    E --> F[JPA/Hibernate]
-    F --> G[(PostgreSQL Database)]
+The application follows a **layered, three-tier architecture** to maintain clean separation of concerns, improve maintainability, and enable comprehensive testing.
 
-    B --> H[Thymeleaf Templates]
-    H --> A
+### Core Layers
 
-    D --> I[Email Service]
-    I --> J[Gmail SMTP]
+| Layer | Responsibility |
+|-------|----------------|
+| **Controller** | HTTP request handling, input validation via Spring MVC, route management for Admin/User roles, and view/response rendering |
+| **Service** | Business logic implementation including user management, product catalog operations, cart management, order processing, and email notifications |
+| **Repository** | Data persistence layer using Spring Data JPA for CRUD operations and custom queries |
+| **Model** | Domain entities (User, Product, Category, Cart, ProductOrder, OrderAddress) representing persistent data |
+| **DTO** | Data Transfer Objects for request validation and response formatting between layers and frontend |
+| **Config** | Security configuration, authentication handlers, and application-wide beans |
 
-    K[File Upload] --> L[Local File System]
-    D --> K
+### Request Flow
 
-    M[Docker Compose] --> N[App Container]
-    M --> O[PostgreSQL Container]
-    N --> P[Spring Boot App]
-    O --> G
+```
+User Browser → Thymeleaf Template → Controller → Service Layer → Repository → Database (PostgreSQL)
+     ↓
+ Spring Security (RBAC) → Authentication/Authorization checks
+     ↓
+ File Upload Handler → Local File System (images, documents)
 ```
 
-### Architecture Overview
-- **Presentation Layer**: Thymeleaf templates with MVC controllers
-- **Business Logic Layer**: Service classes handling application logic
-- **Data Access Layer**: Repository interfaces with JPA implementation
-- **Security Layer**: Spring Security for authentication and authorization
-- **Infrastructure**: Docker containers for deployment, PostgreSQL for data persistence
+### Core Components
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| **Controllers** | `controller/` | HomeController, AdminController, UserController handle HTTP requests and route management |
+| **Services** | `service/` | UserService, ProductService, CategoryService, CartService, OrderService provide business logic |
+| **Repositories** | `repository/` | Spring Data JPA interfaces for database operations |
+| **Models** | `models/` | JPA entities (User, Product, Category, Cart, ProductOrder, OrderAddress) |
+| **DTOs** | `dto/` | Request and response data transfer objects |
+| **Security Config** | `config/` | SecurityConfig, UserDetailsServiceImpl, AuthSucessHandlerImpl, AuthFailureHandlerImpl |
+| **Utilities** | `util/` | CommonUtil, AppConstant, OrderStatus enums and helper functions |
+
+###  Design Patterns Used
+
+| Pattern | Where Used | Purpose |
+|---------|-----------|---------|
+| **Service Layer** | UserService, ProductService, OrderService, CartService, CategoryService | Encapsulates business logic and separates it from controllers |
+| **Repository Pattern** | UserRepository, ProductRepository, CategoryRepository, CartRepository, ProductOrderRepository | Abstracts database access and enables data persistence without coupling to Spring Data directly |
+| **Data Transfer Object (DTO)** | `dto/request/` and `dto/response/` folders | Transfers structured data between layers while protecting entity internals |
+| **MVC** | Controllers + Thymeleaf templates + JPA models | Clean separation between presentation, business logic, and data layers |
+| **Singleton** | All Spring @Bean components and @Service classes | Ensures single instance of services, repositories, and configurations |
+| **Strategy** | AuthSucessHandlerImpl, AuthFailureHandlerImpl | Different authentication strategies for success/failure scenarios |
+| **Factory** | Spring's @Bean methods in SecurityConfig | Centralized creation of complex objects like PasswordEncoder and AuthenticationProvider |
+
+###  Database Design
+
+#### Main Tables
+
+| Table | Purpose |
+|-------|---------|
+| **users** | Stores user profile (name, email, mobile, address), authentication credentials (password, resetToken), account state (enabled, locked) |
+| **product** | Stores product metadata (title, description, price, stock, discount) and references category |
+| **category** | Stores category information (name, image, status) for product classification |
+| **cart** | Stores shopping cart items for users before checkout |
+| **product_order** | Stores individual product orders with quantity, price, payment type, status, and delivery address |
+| **order_address** | Stores delivery addresses for orders (street, city, state, pincode, phone) |
+
+#### Entity Relationships
+
+```
+User (1) ──→ (Many) Cart
+User (1) ──→ (Many) ProductOrder
+User (1) ──→ (Many) Product (seller relationship implicitly handled)
+
+Category (1) ──→ (Many) Product
+Product (1) ──→ (Many) ProductOrder
+
+OrderAddress (1) ──→ (Many) ProductOrder
+```
+
+**Relationship Description:**
+- User can have multiple Cart items and ProductOrders
+- Category has multiple Products
+- Each Product belongs to one Category
+- Each ProductOrder is linked to one User, one Product, and one OrderAddress
+- OrderAddress stores delivery information for orders
+
+**ER diagram :**
+<p align="center">
+<img src="src\main\resources\static\ERdiagram.png" width="500" height="300">
+</p>
+
+
+
+###  Authentication & Security
+
+| Feature | Implementation |
+|---------|-------------------|
+| **Spring Security** | Provides route protection, role-based access control (RBAC) for /admin/** (ROLE_ADMIN) and /user/** (ROLE_USER) paths |
+| **Password Encoding** | BCryptPasswordEncoder hashes passwords with salt to provide strong cryptographic security |
+| **Role-Based Access Control (RBAC)** | Strict route mapping: `/admin/**` requires ROLE_ADMIN, `/user/**` requires ROLE_USER, public routes permit all |
+| **Custom Success Handler** | AuthSucessHandlerImpl automatically redirects authenticated users to roles dashboards (admin or user) |
+| **Custom Failure Handler** | AuthFailureHandlerImpl tracks failed login attempts, locks accounts after threshold, and provides feedback |
+| **Account Locking** | After repeated failed login attempts, accounts are locked for security; tracks `failedAttempt` and `lockTime` |
+| **Password Reset** | Reset tokens are generated and stored in `resetToken` field for secure password recovery |
+| **Lazy Initialization** | Spring Lazy loading prevents circular dependency issues in security chain initialization |
+
+
 
 ## API Endpoints
 
@@ -188,3 +265,6 @@ amarDokan/
 └── README.md                        # This file
 ```
 
+---
+---
+---
