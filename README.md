@@ -83,7 +83,7 @@ User Browser → Thymeleaf Template → Controller → Service Layer → Reposit
 
 ###  Database Design
 
-#### Main Tables
+#### Main Tables :
 
 | Table | Purpose |
 |-------|---------|
@@ -94,7 +94,7 @@ User Browser → Thymeleaf Template → Controller → Service Layer → Reposit
 | **product_order** | Stores individual product orders with quantity, price, payment type, status, and delivery address |
 | **order_address** | Stores delivery addresses for orders (street, city, state, pincode, phone) |
 
-#### Entity Relationships
+#### Entity Relationships :
 
 ```
 User (1) ──→ (Many) Cart
@@ -107,7 +107,7 @@ Product (1) ──→ (Many) ProductOrder
 OrderAddress (1) ──→ (Many) ProductOrder
 ```
 
-**Relationship Description:**
+**Relationship Description :**
 - User can have multiple Cart items and ProductOrders
 - Category has multiple Products
 - Each Product belongs to one Category
@@ -115,9 +115,10 @@ OrderAddress (1) ──→ (Many) ProductOrder
 - OrderAddress stores delivery information for orders
 
 **ER diagram :**
-<p align="center">
-<img src="src\main\resources\static\ERdiagram.png" width="500" height="300">
-</p>
+  <p align="center">
+    <img src="src/main/resources/static/ERdiagram.png" width="100%">
+  </p>
+
 
 
 
@@ -211,9 +212,7 @@ OrderAddress (1) ──→ (Many) ProductOrder
    ./mvnw spring-boot:run
    ```
 
-### Default Admin Credentials
-- **Username**: admin
-- **Password**: admin123
+
 
 ## CI/CD Pipeline
 
