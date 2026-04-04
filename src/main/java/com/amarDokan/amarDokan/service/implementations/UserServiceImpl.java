@@ -16,6 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amarDokan.amarDokan.dto.request.AdminCreateRequestDto;
+import com.amarDokan.amarDokan.dto.request.UserProfileUpdateDto;
+import com.amarDokan.amarDokan.dto.request.UserRequestDto;
+import com.amarDokan.amarDokan.dto.response.UserResponseDto;
+import com.amarDokan.amarDokan.mapper.UserMapper;
 import com.amarDokan.amarDokan.models.User;
 import com.amarDokan.amarDokan.repository.UserRepository;
 import com.amarDokan.amarDokan.service.UserService;
@@ -193,6 +198,32 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean existsEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User saveUserFromDto(UserRequestDto dto, String profileImage) {
+        User user = UserMapper.toEntity(dto);
+        user.setProfileImage(profileImage);
+        return saveUser(user);
+    }
+
+    @Override
+    public User saveAdminFromDto(AdminCreateRequestDto dto, String profileImage) {
+        User user = UserMapper.toEntity(dto);
+        user.setProfileImage(profileImage);
+        return saveAdmin(user);
+    }
+
+    @Override
+    public List<UserResponseDto> getUserDtos(String role) {
+        return getUsers(role).stream().map(UserMapper::toResponseDto).toList();
+    }
+
+    @Override
+    public User updateUserProfileFromDto(UserProfileUpdateDto dto, MultipartFile img) {
+        User user = new User();
+        UserMapper.updateEntity(dto, user);
+        return updateUserProfile(user, img);
     }
 
 }

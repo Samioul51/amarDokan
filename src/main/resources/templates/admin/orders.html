@@ -7,12 +7,16 @@
 </head>
 <body>
 	<section>
-		<div class="container-fluid mt-5 p-1">
-			<div class="row">
-				<p class="text-center fs-3 mt-2">All Orders</p>
-				<hr>
-				<a href="/admin/" class="text-decoration-none"><i
-					class="fa-solid fa-arrow-left"></i> Back</a>
+		<div class="container page-shell">
+			<div class="page-header">
+				<div>
+					<p class="page-title">All Orders</p>
+					<p class="page-subtitle">Search and manage customer orders.</p>
+				</div>
+				<a href="/admin/" class="back-link"><i
+					class="fa-solid fa-arrow-left"></i> Dashboard</a>
+			</div>
+			<div class="flash-stack text-center">
 				<th:block th:if="${session.succMsg}">
 					<p class="text-success fw-bold text-center">[[${session.succMsg}]]</p>
 					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
@@ -22,23 +26,27 @@
 					<p class="text-danger fw-bold text-center">[[${session.errorMsg}]]</p>
 					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
 				</th:block>
-				<div class="col-md-4 p-4">
+			</div>
+			<div class="card card-sh section-card">
+				<div class="card-body">
+				<div class="search-bar mb-4">
 
 					<form action="/admin/search-order" method="get">
-						<div class="row">
-							<div class="col">
+						<div class="row search-row">
+							<div class="col-12 col-sm">
 								<input type="text" class="form-control " name="orderId"
 									placeholder="Enter order id">
 							</div>
-							<div class="col">
-								<button class="btn btn-primary col">Search</button>
+							<div class="col-12 col-sm-auto">
+								<button class="btn btn-primary w-100">Search</button>
 							</div>
 						</div>
 					</form>
 
 				</div>
-				<div class="col-md-12 ps-4 pe-4">
+				<div class="col-md-12 p-0">
 
+					<div class="table-responsive table-shell">
 					<table class="table table-bordered card-sh">
 						<thead class="table-light">
 							<tr>
@@ -167,8 +175,9 @@
 							</th:block>
 						</tbody>
 					</table>
+					</div>
 					<th:block th:if="${!srch}">
-						<div class="row">
+						<div class="row mt-4">
 							<div class="col-md-4">Total Orders : [[${totalElements}]]</div>
 							<div class="col-md-6">
 
@@ -198,6 +207,7 @@
 						</div>
 					</th:block>
 				</div>
+			</div>
 			</div>
 
 		</div>
