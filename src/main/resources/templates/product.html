@@ -7,33 +7,31 @@
 </head>
 <body>
 	<section>
-	
-		<div class="container-fluid bg-primary p-4 mt-5 ">
-			<div class="row">
-				<div class="col-md-8 offset-md-2">
+		<div class="content-wrap page-shell">
+		<div class="shop-banner p-4 mb-4">
+			<div class="row justify-content-center">
+				<div class="col-lg-8">
 					<form action="/products" method="get">
 						<div class="input-group">
-							<input type="text" class="form-control" name="ch">
-							<button class="btn btn-light text-dark ms-3 col-md-2">
+							<input type="text" class="form-control" name="ch" placeholder="Search for products">
+							<button class="btn btn-light text-dark ms-0 ms-md-3 mt-3 mt-md-0">
 								<i class="fa-solid fa-magnifying-glass"></i> Search
 							</button>
 						</div>
 					</form>
 				</div>
 			</div>
-
 		</div>
 
 
-		<div class="container-fluid mt-1">
-			<div class="row">
+		<div class="row g-4 shop-layout">
 
-				<div class="col-md-2 p-0">
+				<div class="col-lg-3">
 
-					<div class="card shadow-sm p-0 mb-5 bg-body-tertiary rounded">
+					<div class="card card-sh section-card filter-card sticky-panel">
 						<div class="card-body">
 							<div class="list-group">
-								<p class="fs-5">Category</p>
+								<p class="section-title mb-3">Category</p>
 								<a href="/products"
 									th:classappend="${paramValue==''} ? 'active':''"
 									class="list-group-item list-group-item-action"
@@ -45,28 +43,33 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-10">
-					<div class="card">
+				<div class="col-lg-9">
+					<div class="card card-sh section-card product-list-card">
 						<div class="card-body">
-							<p class="fs-3 text-center">Products</p>
-							<div class="row">
+							<div class="page-header mb-4">
+								<div>
+									<p class="page-title">Products</p>
+									<p class="page-subtitle">Browse the available collection with the current filters.</p>
+								</div>
+							</div>
+							<div class="row product-grid">
 
 								<th:block th:if="${productsSize >0}">
-									<div class="col-md-3 mt-2" th:each="p:${products}">
-										<div class="card card-sh">
+									<div class="col-6 col-md-4 col-xl-3" th:each="p:${products}">
+										<div class="card card-sh product-card product-item-card">
 											<div class="card-body text-center">
-												<img alt="" th:src="${p.image != null and #strings.startsWith(p.image, 'http')} ? ${p.image} : @{'/img/product_img/' + ${p.image}}"
-													width="150px" height="150px">
-												<p class="fs-5 text-center">[[${p.title}]]</p>
-												<div class="row text-center">
-													<p class="fs-6 fw-bold ">
+												<img th:src="${p.image != null and #strings.startsWith(p.image, 'http')} ? ${p.image} : @{'/img/product_img/' + ${p.image}}"
+													class="product-item-image" alt="Product image">
+												<p class="fs-5 text-center mb-2">[[${p.title}]]</p>
+												<div class="text-center mt-auto">
+													<p class="fs-6 fw-bold price-stack">
 														<span><th:block th:utext="${@commnServiceImpl.takaSign()}"></th:block> [[${p.discountPrice}]]</span> <br> <span
 															class="text-decoration-line-through text-secondary"><th:block th:utext="${@commnServiceImpl.takaSign()}"></th:block>
 															[[${p.price}]]</span> <span class="fs-6 text-success">[[${p.discount}]]%
 															off </span>
 													</p>
 													<a th:href="@{'/product/'+${p.id}}"
-														class="btn btn-primary col-md-6 offset-md-3">View
+														class="btn btn-primary w-100">View
 														Details</a>
 												</div>
 											</div>
@@ -78,42 +81,41 @@
 										available</p>
 								</th:block>
 							</div>
+							<div class="pagination-panel">
+								<div class="row align-items-center g-3">
+									<div class="col-12 col-md-4">Total Products : [[${totalElements}]]</div>
+									<div class="col-12 col-md-8">
+										<th:block th:if="${productsSize>0}">
+											<nav aria-label="Page navigation example">
+												<ul class="pagination justify-content-md-end mb-0">
+													<li class="page-item"
+														th:classappend="${isFirst} ? 'disabled':''"><a
+														class="page-link"
+														th:href="@{'/products?pageNo='+${pageNo-1}}"
+														aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+													</a></li>
 
+													<li th:each="i:${#numbers.sequence(1,totalPages)}"
+														class="page-item" th:classappend="${pageNo+1==i}?'active':''"><a class="page-link"
+														th:href="@{'/products?pageNo='+${i-1}}">[[${i}]]</a></li>
+
+													<li class="page-item"
+														th:classappend="${isLast} ? 'disabled':''"><a
+														class="page-link"
+														th:href="@{'/products?pageNo='+${pageNo+1}}"
+														aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+													</a></li>
+												</ul>
+											</nav>
+										</th:block>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-					<!-- Start Pagination -->
-					<div class="row">
-						<div class="col-md-4">Total Products : [[${totalElements}]]</div>
-						<div class="col-md-6">
-							<th:block th:if="${productsSize>0}">
-								<nav aria-label="Page navigation example">
-									<ul class="pagination">
-										<li class="page-item"
-											th:classappend="${isFirst} ? 'disabled':''"><a
-											class="page-link"
-											th:href="@{'/products?pageNo='+${pageNo-1}}"
-											aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-										</a></li>
-
-										<li th:each="i:${#numbers.sequence(1,totalPages)}"
-											class="page-item" th:classappend="${pageNo+1==i}?'active':''"
-											]]><a class="page-link"
-											th:href="@{'/products?pageNo='+${i-1}}">[[${i}]]</a></li>
-
-										<li class="page-item"
-											th:classappend="${isLast} ? 'disabled':''"><a
-											class="page-link"
-											th:href="@{'/products?pageNo='+${pageNo+1}}"
-											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-										</a></li>
-									</ul>
-								</nav>
-						</div>
-						</th:block>
-					</div>
-
 				</div>
 			</div>
+		</div>
 		</div>
 
 	</section>

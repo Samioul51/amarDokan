@@ -7,12 +7,16 @@
 </head>
 <body>
 	<section>
-		<div class="container-fluid mt-4 p-3">
-			<div class="row">
-				<p class="text-center fs-3 mt-2">All Products</p>
-				<hr>
-				<a href="/admin/" class="text-decoration-none"><i
-					class="fa-solid fa-arrow-left"></i> Back</a>
+		<div class="container page-shell">
+			<div class="page-header">
+				<div>
+					<p class="page-title">All Products</p>
+					<p class="page-subtitle">Review, search, and update product records.</p>
+				</div>
+				<a href="/admin/" class="back-link"><i
+					class="fa-solid fa-arrow-left"></i> Dashboard</a>
+			</div>
+			<div class="flash-stack">
 				<th:block th:if="${session.succMsg}">
 					<p class="text-success fw-bold">[[${session.succMsg}]]</p>
 					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
@@ -22,15 +26,18 @@
 					<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
 					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
 				</th:block>
-				<div class="col-md-4 p-3">
+			</div>
+			<div class="card card-sh section-card">
+				<div class="card-body">
+				<div class="search-bar mb-4">
 
 					<form action="/admin/products" method="get">
-						<div class="row">
-							<div class="col">
-								<input type="text" class="form-control " name="ch">
+						<div class="row search-row">
+							<div class="col-12 col-sm">
+								<input type="text" class="form-control" name="ch" placeholder="Search products">
 							</div>
-							<div class="col">
-								<button class="btn btn-primary col">Search</button>
+							<div class="col-12 col-sm-auto">
+								<button class="btn btn-primary w-100">Search</button>
 							</div>
 						</div>
 					</form>
@@ -38,7 +45,7 @@
 				</div>
 
 
-				<div class="p-3">
+				<div class="table-responsive table-shell">
 					<table class="table table-bordered">
 						<thead class="table-light ">
 							<tr>
@@ -58,7 +65,7 @@
 							<tr th:each="p,c:${products}">
 								<th scope="row">[[${c.count}]]</th>
 								<td><img th:src="${#strings.startsWith(p.image, 'http')} ? ${p.image} : @{'/img/product_img/' + ${p.image}}"
-									width="70px" height="70px"></td>
+									class="media-thumb" alt="Product image"></td>
 								<td>[[${p.title}]]</td>
 								<td>[[${p.category != null ? p.category.name : 'N/A'}]]</td>
 								<td>[[${p.price}]]</td>
@@ -76,13 +83,14 @@
 
 						</tbody>
 					</table>
-
-					<div class="row">
-						<div class="col-md-4">Total Product : [[${totalElements}]]</div>
-						<div class="col-md-6">
+				</div>
+				<div class="pagination-panel">
+					<div class="row align-items-center g-3">
+						<div class="col-12 col-md-4">Total Product : [[${totalElements}]]</div>
+						<div class="col-12 col-md-8">
 
 							<nav aria-label="Page navigation example">
-								<ul class="pagination">
+								<ul class="pagination justify-content-md-end mb-0">
 									<li class="page-item"
 										th:classappend="${isFirst} ? 'disabled':''"><a
 										class="page-link"
@@ -105,6 +113,7 @@
 						</div>
 
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>

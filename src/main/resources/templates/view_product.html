@@ -7,11 +7,11 @@
 </head>
 <body>
 	<section>
-		<div class="container card-sh"
-			style="margin-top: 70px; margin-bottom: 100px">
+		<div class="content-wrap page-shell">
+		<div class="card card-sh section-card product-detail-card">
 
-			<div class="col-md-12 p-5">
-				<div class="row">
+			<div class="card-body p-lg-5">
+				<div class="row g-4 align-items-center">
 					<th:block th:if="${session.succMsg}">
 						<p class="text-success alert alert-success text-center" role="alert">[[${session.succMsg}]]</p>
 						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
@@ -22,14 +22,15 @@
 						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
 
 					</th:block>
-					<div class="col-md-6 text-end">
+					<div class="col-lg-6 text-center text-lg-end">
 						<img alt="" th:src="${product.image != null and #strings.startsWith(product.image, 'http')} ? ${product.image} : @{'/img/product_img/' + ${product.image}}" width="300px"
-							height="250px">
+							height="250px" class="product-detail-image">
 					</div>
 
-					<div class="col-md-6">
+					<div class="col-lg-6">
 
-						<p class="fs-3">[[${product.title}]]</p>
+						<p class="page-title mb-2">[[${product.title}]]</p>
+						<p class="page-subtitle mb-4">Product overview and purchase options.</p>
 						<p>
 							<span class="fw-bold">Description : </span><br>[[${product.description}]]
 						</p>
@@ -57,43 +58,50 @@
 								off</span>
 						</p>
 
-						<div class="row">
-							<div class="col-md-4 text-success text-center p-2">
+						<div class="row g-3">
+							<div class="col-md-4">
+								<div class="feature-pill text-success text-center">
 								<i class="fas fa-money-bill-wave fa-2x"></i>
 								<p>Cash On Delivery</p>
+								</div>
 							</div>
-							<div class="col-md-4 text-danger text-center p-2">
+							<div class="col-md-4">
+								<div class="feature-pill text-danger text-center">
 								<i class="fas fa-undo-alt fa-2x"></i>
 								<p>Return Available</p>
+								</div>
 							</div>
-							<div class="col-md-4 text-primary text-center p-2">
+							<div class="col-md-4">
+								<div class="feature-pill text-primary text-center">
 								<i class="fas fa-truck-moving fa-2x"></i>
 								<p>Free Shipping</p>
+								</div>
 							</div>
 						</div>
 
 						<th:block th:if="${product.stock>0}">
 							<th:block th:if="${user==null}">
-								<a href="/signin" class="btn btn-danger col-md-12">Add To
+								<a href="/signin" class="btn btn-danger w-100 mt-4">Add To
 									Cart</a>
 							</th:block>
 
 							<th:block th:unless="${user==null}">
 								<a
 									th:href="@{'/user/addCart?pid='+${product.id}+'&uid='+${user.id}}"
-									class="btn btn-danger col-md-12">Add To Cart</a>
+									class="btn btn-danger w-100 mt-4">Add To Cart</a>
 							</th:block>
 
 						</th:block>
 
 						<th:block th:unless="${product.stock>0}">
-							<a href="#" class="btn text-white btn-warning col-md-12">Out
+							<a href="#" class="btn text-white btn-warning w-100 mt-4">Out
 								of Stock</a>
 						</th:block>
 
 					</div>
 				</div>
 			</div>
+		</div>
 		</div>
 
 

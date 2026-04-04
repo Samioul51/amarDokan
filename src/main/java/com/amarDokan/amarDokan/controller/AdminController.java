@@ -215,7 +215,7 @@ public class AdminController {
             session.setAttribute("errorMsg", "something wrong on server");
         }
 
-        return "redirect:/admin/loadEditCategory/" + category.getId();
+        return "redirect:/admin/category";
     }
 
     @PostMapping("/saveProduct")
@@ -319,7 +319,7 @@ public class AdminController {
             }
 
         }
-        return "redirect:/admin/editProduct/" + product.getId();
+        return "redirect:/admin/products";
     }
 
     @GetMapping("/users")
