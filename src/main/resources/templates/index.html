@@ -44,13 +44,13 @@
 					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
 						<div class="card-body text-center">
 
-							<img th:src="${c.imageName != null and #strings.startsWith(c.imageName, 'http')} 
-              ? ${c.imageName} 
-              : ${c.imageName != null} 
-                ? @{'/img/category_img/' + ${c.imageName}} 
-                : @{'/images/placeholder.png'}" width="65%" height="140px">
-							<p class="text-center"></p><a th:href="@{'/products?category='+${c.name}}"
-								class="text-decoration-none">[[${c.name}]]</a></p>
+							<img th:src="${c.imageName != null and #strings.startsWith(c.imageName, 'http') 
+              ? c.imageName 
+              : (c.imageName != null 
+                 ? '/img/category_img/' + c.imageName 
+                 : '/images/placeholder.png')}" width="65%" height="140px">
+							<p class="text-center"><a th:href="@{'/products?category='+${c.name}}"
+									class="text-decoration-none">[[${c.name}]]</a></p>
 						</div>
 					</div>
 				</div>
