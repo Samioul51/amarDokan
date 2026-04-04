@@ -7,12 +7,20 @@
 </head>
 <body>
 	<section>
-		<div class="container p-5 mt-3">
-			<div class="row">
-				<div class="col-md-8 offset-md-2">
-					<div class="card card-sh">
-						<div class="card-header text-center ">
-							<p class="fs-4">Edit Product</p>
+		<div class="container page-shell">
+			<div class="page-header">
+				<div>
+					<p class="page-title">Edit Product</p>
+					<p class="page-subtitle">Update the product and return to the product list after saving.</p>
+				</div>
+				<a href="/admin/products" class="back-link"><i class="fa-solid fa-arrow-left"></i>Back to Products</a>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-lg-8">
+					<div class="card card-sh section-card">
+						<div class="card-header text-center">
+							<p class="section-title">Product Information</p>
+							<div class="flash-stack mt-2">
 
 							<th:block th:if="${session.succMsg}">
 								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
@@ -23,25 +31,25 @@
 								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
 								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
 							</th:block>
-
+							</div>
 						</div>
 						<div class="card-body">
 							<form action="/admin/updateProduct" method="post"
 								enctype="multipart/form-data">
 								<input type="hidden" name="id" th:value="${product.id}">
 								<div class="mb-3">
-									<label>Enter Title</label> <input type="text" name="title"
+									<label class="form-label">Enter Title</label> <input type="text" name="title"
 										th:value="${product.title}" class="form-control">
 								</div>
 
 								<div class="mb-3">
-									<label>Enter Description</label>
+									<label class="form-label">Enter Description</label>
 									<textarea rows="3" cols="" class="form-control"
 										name="description">[[${product.description}]]</textarea>
 								</div>
 								<div class="row">
 									<div class="mb-3 col">
-										<label>Category</label> <select class="form-control"
+										<label class="form-label">Category</label> <select class="form-select"
 											name="category.id">
 											<option value="">--select--</option>
 											<option th:each="c:${categories}" th:value="${c.id}"
@@ -49,24 +57,24 @@
 										</select>
 									</div>
 									<div class="mb-3 col">
-										<label>Enter Price</label> <input type="number" name="price"
+										<label class="form-label">Enter Price</label> <input type="number" name="price"
 											th:value="${product.price}" class="form-control">
 									</div>
 								</div>
 
 								<div class="row">
 									<div class="mb-3 col">
-										<label>Discount</label> <input type="number" name="discount"
+										<label class="form-label">Discount</label> <input type="number" name="discount"
 											th:value="${product.discount}" class="form-control">
 									</div>
 									<div class="mb-3 col">
-										<label>Discount Price</label> <input type="number" readonly
+										<label class="form-label">Discount Price</label> <input type="number" readonly
 											th:value="${product.discountPrice}" class="form-control">
 									</div>
 								</div>
 
 								<div class="mb-3">
-									<label>Status</label>
+									<label class="form-label">Status</label>
 
 									<div class="form-check">
 										<input class="form-check-input" type="radio" th:checked="${product.isActive==true}"
@@ -86,22 +94,22 @@
 								<div class="row">
 
 									<div class="mb-3 col">
-										<label>Enter Stock</label> <input type="text" name="stock"
+										<label class="form-label">Enter Stock</label> <input type="text" name="stock"
 											th:value="${product.stock}" class="form-control">
 									</div>
 
 									<div class="mb-3 col">
-										<label>Upload Image</label> <input type="file" name="file"
+										<label class="form-label">Upload Image</label> <input type="file" name="file"
 											class="form-control">
 									</div>
 
 									<div class="mt-1">
 										<img th:src="${#strings.startsWith(product.image, 'http')} ? ${product.image} : @{'/img/product_img/' + ${product.image}}"
-											width="100px" height="100px">
+											class="media-thumb media-thumb-lg" alt="Product preview">
 									</div>
 
 								</div>
-								<button class="btn btn-primary col-md-12">Update</button>
+								<button class="btn btn-primary w-100">Update</button>
 							</form>
 						</div>
 					</div>
