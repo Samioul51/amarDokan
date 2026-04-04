@@ -44,8 +44,11 @@
 					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
 						<div class="card-body text-center">
 
-							<img th:src="${c.imageName != null ? (c.imageName.startsWith('http') ? c.imageName : '/images/' + c.imageName) : '/images/placeholder.png'}"
-								width="65%" height="140px">
+							<img th:src="${c.imageName != null and #strings.startsWith(c.imageName, 'http')} 
+              ? ${c.imageName} 
+              : ${c.imageName != null} 
+                ? @{'/img/category_img/' + ${c.imageName}} 
+                : @{'/images/placeholder.png'}" width="65%" height="140px">
 							<p class="text-center"></p><a th:href="@{'/products?category='+${c.name}}"
 								class="text-decoration-none">[[${c.name}]]</a></p>
 						</div>
@@ -66,7 +69,7 @@
 					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
 						<div class="card-body text-center">
 							<img alt=""
-								th:src="${p.image != null and #strings.startsWith(p.image, 'http') ? p.image : (p.image != null ? '/images/' + p.image : '/images/placeholder.png')}"
+								th:src="${p.image != null and #strings.startsWith(p.image, 'http')} ? ${p.image} : @{'/img/product_img/' + ${p.image}}"
 								class="" width="65%" height="140px">
 							<p class="text-center"><a th:href="@{'/product/'+${p.id}}"
 									class="text-decoration-none">[[${p.title}]]</a></p>
